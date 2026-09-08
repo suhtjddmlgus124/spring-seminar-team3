@@ -26,4 +26,23 @@ class MeetingRepository {
     }
 
     fun findById(id: Long): Meeting? = meetings[id]
+    
+    fun findAll(): List<Meeting> = meetings.values.toList()
+    
+    fun deleteById(id: Long): Meeting? = meetings.remove(id)
+
+    fun update(
+        id: Long,
+        title: String?,
+        capacity: Int?,
+    ): Meeting? {
+        val meeting = meetings[id] ?: return null
+        val updatedMeeting = Meeting(
+            id = meeting.id,
+            title = title ?: meeting.title,
+            capacity = capacity ?: meeting.capacity,
+        )
+        meetings[id] = updatedMeeting
+        return updatedMeeting
+    }
 }
