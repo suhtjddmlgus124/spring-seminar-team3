@@ -1,0 +1,35 @@
+# 개발용 MySQL. 각자 컴퓨터에 직접 설치하지 않고 도커로 띄운다.
+# 조원 모두 같은 종류와 버전을 쓰기 위해서다.
+#
+#   docker compose up -d     띄우기
+#   docker compose logs -f   로그 보기
+#   docker compose down      내리기 (데이터는 볼륨에 남는다)
+#   docker compose down -v   데이터까지 지우기
+#
+# 테스트는 Testcontainers 가 일회용 MySQL 을 따로 띄우므로 이 컨테이너를 쓰지 않는다.
+# 다만 도커 자체는 켜져 있어야 한다.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: waggle-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: waggle
+      MYSQL_USER: waggle
+      MYSQL_PASSWORD: waggle
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uwaggle", "-pwaggle"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

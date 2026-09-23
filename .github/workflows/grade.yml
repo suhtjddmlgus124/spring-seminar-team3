@@ -11,6 +11,8 @@ permissions:
 jobs:
   grade:
     if: github.repository != 'WaffleStudio24-5/spring-seminar-upstream'
-    uses: WaffleStudio24-5/spring-seminar-judge/.github/workflows/grade.yml@main
+    uses: WaffleStudio24-5/spring-seminar-judge/.github/workflows/grade-assignment.yml@main
     with:
+      assignment: v2
+      assignment_ref: assignment-v2
       result_url: https://spring-seminar-judge.vercel.app/api
