@@ -1379,7 +1379,7 @@
       },
       "zyvaBzRp0TK0f7DFsXcSM": {
         "id": "zyvaBzRp0TK0f7DFsXcSM",
-        "name": "UQ_participaions_rookieId_sessionId",
+        "name": "UQ_participations_rookieId_sessionId",
         "tableId": "0A_z633_OjMYNiyakAaNz",
         "indexColumnIds": [
           "wQ0nDhYNTpf7PxTNoDrWK",
@@ -1391,7 +1391,7 @@
         ],
         "unique": true,
         "meta": {
-          "updateAt": 1790258815081,
+          "updateAt": 1790260564718,
           "createAt": 1790257899623
         }
       }
