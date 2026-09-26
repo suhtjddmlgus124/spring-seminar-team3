@@ -4,9 +4,9 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
-enum class AttendanceStatus { PRESENT, ABSENT }
+enum class ParticipationAttendanceStatus { PRESENT, ABSENT }
 
-enum class AssignmentStatus { PASSED, SUBMITTED_BUT_FAILED, NOT_SUBMITTED }
+enum class ParticipationAssignmentStatus { PASSED, SUBMITTED_BUT_FAILED, NOT_SUBMITTED }
 
 @Table("participations")
 data class Participation(
@@ -14,10 +14,10 @@ data class Participation(
     val id: Long? = null,
 
     @Column("attendanceStatus")
-    val attendanceStatus: AttendanceStatus?,
+    val attendanceStatus: ParticipationAttendanceStatus?,
 
     @Column("assignmentStatus")
-    val assignmentStatus: AssignmentStatus?,
+    val assignmentStatus: ParticipationAssignmentStatus?,
 
     @Column("rookieId")
     val rookieId: Long,
