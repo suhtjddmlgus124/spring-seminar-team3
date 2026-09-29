@@ -1,6 +1,6 @@
 package com.wafflestudio.spring2026.waggle.service
 
-import java.time.LocalDateTime
+import java.time.Instant
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import com.wafflestudio.spring2026.waggle.model.User
@@ -51,7 +51,7 @@ class UserService(
             role = role,
             seminarId = seminarId,
             status = UserStatus.PENDING,
-            createdAt = LocalDateTime.now(),
+            createdAt = Instant.now(),
         )
         return userRepository.save(user)
     }
