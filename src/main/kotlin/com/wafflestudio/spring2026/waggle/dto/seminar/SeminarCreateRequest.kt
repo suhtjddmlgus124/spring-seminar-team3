@@ -1,6 +1,6 @@
 package com.wafflestudio.spring2026.waggle.dto.seminar
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.PositiveOrZero
@@ -17,9 +17,9 @@ data class SeminarCreateRequest(
     @field:Positive("1 이상의 값이어야 합니다.")
     val capacity: Int,
     
-    val applyStartAt: LocalDateTime,
+    val applyStartAt: OffsetDateTime,
     
-    val applyEndAt: LocalDateTime,
+    val applyEndAt: OffsetDateTime,
     
     @field:PositiveOrZero("0 이상의 값이어야 합니다.")
     val totalGraceDays: Int,

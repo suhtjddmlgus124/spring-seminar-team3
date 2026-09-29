@@ -1,6 +1,6 @@
 package com.wafflestudio.spring2026.waggle.controller
 
-import java.time.LocalDateTime
+import java.time.Instant
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.http.ResponseEntity
@@ -28,7 +28,7 @@ class SeminarController(
         val seminar = seminarService.getSeminar(id)
         val enrolledCount = seminarService.getEnrolledCount(seminar)
         val sessionCount = seminarService.getSessionCount(seminar)
-        val status = seminarService.getStatus(seminar, enrolledCount, LocalDateTime.now())
+        val status = seminarService.getStatus(seminar, enrolledCount)
 
         val response = SeminarResponse.from(seminar, enrolledCount, status, sessionCount)        
         return ResponseEntity.ok(response)
@@ -40,12 +40,12 @@ class SeminarController(
             title = request.title,
             description = request.description,
             capacity = request.capacity,
-            applyStartAt = request.applyStartAt,
-            applyEndAt = request.applyEndAt,
+            applyStartAt = request.applyStartAt.toInstant(),
+            applyEndAt = request.applyEndAt.toInstant(),
             totalGraceDays = request.totalGraceDays,
         )
         
-        val response = SeminarCreateResponse.from(seminar, LocalDateTime.now())
+        val response = SeminarCreateResponse.from(seminar)
         return ResponseEntity
             .created(URI.create("/seminars/${seminar.id}"))
             .body(response)
@@ -65,7 +65,7 @@ class SeminarController(
         
         val enrolledCount = seminarService.getEnrolledCount(seminar)
         val sessionCount = seminarService.getSessionCount(seminar)
-        val status = seminarService.getStatus(seminar, enrolledCount, LocalDateTime.now())
+        val status = seminarService.getStatus(seminar, enrolledCount)
         
         val response = SeminarResponse.from(updatedSeminar, enrolledCount, status, sessionCount)
         return ResponseEntity.ok(response)

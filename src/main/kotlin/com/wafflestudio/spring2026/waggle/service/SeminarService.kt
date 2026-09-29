@@ -5,7 +5,7 @@ import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
 import com.wafflestudio.spring2026.waggle.repository.SessionRepository
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
-import java.time.LocalDateTime
+import java.time.Instant
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -23,8 +23,8 @@ class SeminarService(
         title: String,
         description: String?,
         capacity: Int,
-        applyStartAt: LocalDateTime,
-        applyEndAt: LocalDateTime,
+        applyStartAt: Instant,
+        applyEndAt: Instant,
         totalGraceDays: Int,
     ): Seminar {
         val seminar = Seminar(
@@ -34,6 +34,7 @@ class SeminarService(
             applyStartAt = applyStartAt,
             applyEndAt = applyEndAt,
             totalGraceDays = totalGraceDays,
+            createdAt = Instant.now(),
         )
         return seminarRepository.save(seminar)
     }
@@ -47,7 +48,8 @@ class SeminarService(
     fun getSessionCount(seminar: Seminar): Long
         = sessionRepository.countBySeminarId(seminar.id!!)
         
-    fun getStatus(seminar: Seminar, enrolledCount: Long, now: LocalDateTime): SeminarStatus {
+    fun getStatus(seminar: Seminar, enrolledCount: Long): SeminarStatus {
+        val now = Instant.now()
         return if(enrolledCount >= seminar.capacity.toLong() || !now.isBefore(seminar.applyEndAt)) 
             SeminarStatus.CLOSED 
         else if(now.isBefore(seminar.applyStartAt))
