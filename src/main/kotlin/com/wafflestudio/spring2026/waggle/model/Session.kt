@@ -3,7 +3,7 @@ package com.wafflestudio.spring2026.waggle.model
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Table("sessions")
 data class Session(
@@ -14,7 +14,7 @@ data class Session(
     val title: String,
 
     @Column("startsAt")
-    val startsAt: LocalDateTime,
+    val startsAt: Instant,
     
     @Column("location")
     val location: String,
