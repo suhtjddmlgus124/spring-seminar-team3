@@ -36,6 +36,6 @@ data class SignupRequest(
         get() = when(role) {
             UserRole.STAFF -> seminarId != null
             UserRole.ROOKIE -> seminarId == null
-            else -> false
+            else -> true
         }
 }
