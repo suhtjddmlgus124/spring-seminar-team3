@@ -1,6 +1,6 @@
 package com.wafflestudio.spring2026.waggle.service
 
-import java.time.LocalDateTime
+import java.time.Instant
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import com.wafflestudio.spring2026.waggle.model.Enrollment
@@ -50,7 +50,7 @@ class EnrollmentService(
      *  4. 세미나가 OPEN 이 아니면       409
      * 세미나와 사용자의 존재 여부(404)는 호출 전에 확인한다.
      */
-    fun createEnrollment(seminar: Seminar, rookie: User, now: LocalDateTime): Enrollment {
+    fun createEnrollment(seminar: Seminar, rookie: User, now: Instant): Enrollment {
         if (rookie.role != UserRole.ROOKIE) throw UserIsNotRookieException()
         if (rookie.status != UserStatus.APPROVED) throw RookieIsNotApprovedException()
 
@@ -63,7 +63,7 @@ class EnrollmentService(
 
         // 신청 기간 안이고 정원이 남아 있어야 한다. 두 조건을 합친 것이 OPEN 이다.
         val enrolledCount = enrollmentRepository.countBySeminarId(seminarId)
-        if (seminarService.getStatus(seminar, enrolledCount, now) != SeminarStatus.OPEN) {
+        if (seminarService.getStatus(seminar, enrolledCount) != SeminarStatus.OPEN) {
             throw SeminarIsNotOpenException()
         }
 
@@ -96,7 +96,7 @@ class EnrollmentService(
      * 정원이 차서 CLOSED 인 세미나라도 신청 기간 안이면 취소할 수 있다.
      * 그래서 세미나 상태가 아니라 기간만 본다: applyStartAt <= now < applyEndAt
      */
-    fun deleteEnrollment(seminar: Seminar, enrollment: Enrollment, now: LocalDateTime) {
+    fun deleteEnrollment(seminar: Seminar, enrollment: Enrollment, now: Instant) {
         if (now.isBefore(seminar.applyStartAt) || !now.isBefore(seminar.applyEndAt)) {
             throw EnrollmentPeriodClosedException()
         }

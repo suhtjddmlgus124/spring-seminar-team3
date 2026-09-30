@@ -1,7 +1,7 @@
 package com.wafflestudio.spring2026.waggle.controller
 
 import java.net.URI
-import java.time.LocalDateTime
+import java.time.Instant
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -54,7 +54,6 @@ class EnrollmentController(
         return ResponseEntity.noContent().build()
     }
 
-    // 저장된 시각과 같은 기준으로 비교하기 위해 시스템 기본 타임존을 타지 않는다.
-    // 팀에서 저장 규약(UTC)을 확정하면 공통 유틸로 옮긴다.
-    private fun now(): LocalDateTime = LocalDateTime.now(java.time.ZoneOffset.UTC)
+    // Instant 는 시점 자체라 타임존 해석이 끼어들지 않는다.
+    private fun now(): Instant = Instant.now()
 }
