@@ -3,7 +3,7 @@ package com.wafflestudio.spring2026.waggle.model
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
-import java.time.LocalDateTime
+import java.time.Instant
 
 enum class UserRole { ROOKIE, STAFF, ADMIN }
 
@@ -33,7 +33,7 @@ data class User(
     val status: UserStatus,
 
     @Column("createdAt")
-    val createdAt: LocalDateTime,
+    val createdAt: Instant,
 
     @Column("seminarId")
     val seminarId: Long?,
