@@ -26,6 +26,7 @@ class SeminarService(
         applyStartAt: Instant,
         applyEndAt: Instant,
         totalGraceDays: Int,
+        now: Instant,
     ): Seminar {
         val seminar = Seminar(
             title = title,
@@ -34,7 +35,7 @@ class SeminarService(
             applyStartAt = applyStartAt,
             applyEndAt = applyEndAt,
             totalGraceDays = totalGraceDays,
-            createdAt = Instant.now(),
+            createdAt = now,
         )
         return seminarRepository.save(seminar)
     }
@@ -48,8 +49,7 @@ class SeminarService(
     fun getSessionCount(seminar: Seminar): Long
         = sessionRepository.countBySeminarId(seminar.id!!)
         
-    fun getStatus(seminar: Seminar, enrolledCount: Long): SeminarStatus {
-        val now = Instant.now()
+    fun getStatus(seminar: Seminar, enrolledCount: Long, now: Instant): SeminarStatus {
         return if(enrolledCount >= seminar.capacity.toLong() || !now.isBefore(seminar.applyEndAt)) 
             SeminarStatus.CLOSED 
         else if(now.isBefore(seminar.applyStartAt))

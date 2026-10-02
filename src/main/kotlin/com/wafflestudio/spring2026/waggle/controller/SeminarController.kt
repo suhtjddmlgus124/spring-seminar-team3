@@ -28,7 +28,7 @@ class SeminarController(
         val seminar = seminarService.getSeminar(id)
         val enrolledCount = seminarService.getEnrolledCount(seminar)
         val sessionCount = seminarService.getSessionCount(seminar)
-        val status = seminarService.getStatus(seminar, enrolledCount)
+        val status = seminarService.getStatus(seminar, enrolledCount, Instant.now())
 
         val response = SeminarResponse.from(seminar, enrolledCount, status, sessionCount)        
         return ResponseEntity.ok(response)
@@ -43,6 +43,7 @@ class SeminarController(
             applyStartAt = request.applyStartAt.toInstant(),
             applyEndAt = request.applyEndAt.toInstant(),
             totalGraceDays = request.totalGraceDays,
+            now = Instant.now(),
         )
         
         val response = SeminarCreateResponse.from(seminar)
@@ -65,7 +66,7 @@ class SeminarController(
         
         val enrolledCount = seminarService.getEnrolledCount(seminar)
         val sessionCount = seminarService.getSessionCount(seminar)
-        val status = seminarService.getStatus(seminar, enrolledCount)
+        val status = seminarService.getStatus(seminar, enrolledCount, Instant.now())
         
         val response = SeminarResponse.from(updatedSeminar, enrolledCount, status, sessionCount)
         return ResponseEntity.ok(response)
