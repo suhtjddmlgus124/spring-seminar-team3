@@ -1,6 +1,7 @@
 package com.wafflestudio.spring2026.waggle.controller
 
 import java.net.URI
+import java.time.Instant
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
@@ -57,6 +58,7 @@ class AuthController(
             githubUsername = request.githubUsername,
             role = request.role,
             seminarId = request.seminarId,
+            now = Instant.now(),
         )
         
         val response = UserResponse.from(user)

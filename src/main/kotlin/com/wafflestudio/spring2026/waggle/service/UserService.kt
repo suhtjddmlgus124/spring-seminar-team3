@@ -33,7 +33,8 @@ class UserService(
         name: String,
         githubUsername: String,
         role: UserRole,
-        seminarId: Long?
+        seminarId: Long?,
+        now: Instant,
     ): User {
         // 이메일은 중복될 수 없음
         if(userRepository.existsByEmail(email)) 
@@ -51,7 +52,7 @@ class UserService(
             role = role,
             seminarId = seminarId,
             status = UserStatus.PENDING,
-            createdAt = Instant.now(),
+            createdAt = now,
         )
         return userRepository.save(user)
     }
