@@ -3,7 +3,7 @@ package com.wafflestudio.spring2026.waggle.model
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Table("seminars")
 data class Seminar(
@@ -20,11 +20,14 @@ data class Seminar(
     val capacity: Int,
 
     @Column("applyStartAt")
-    val applyStartAt: LocalDateTime,
+    val applyStartAt: Instant,
 
     @Column("applyEndAt")
-    val applyEndAt: LocalDateTime,
+    val applyEndAt: Instant,
 
     @Column("totalGraceDays")
     val totalGraceDays: Int,
+    
+    @Column("createdAt")
+    val createdAt: Instant,
 )

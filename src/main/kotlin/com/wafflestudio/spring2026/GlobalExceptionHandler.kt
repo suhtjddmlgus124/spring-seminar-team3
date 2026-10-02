@@ -1,6 +1,10 @@
 package com.wafflestudio.spring2026
 
 import com.wafflestudio.spring2026.meeting.MeetingNotFoundException
+import com.wafflestudio.spring2026.waggle.service.SeminarNotFoundException
+import com.wafflestudio.spring2026.waggle.service.UserNotFoundException
+import com.wafflestudio.spring2026.waggle.service.UserEmailAlreadyExistsException
+import com.wafflestudio.spring2026.waggle.service.UserIsNotPendingException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -38,5 +42,49 @@ class GlobalExceptionHandler {
                 code = "MEETING_NOT_FOUND",
                 message = exception.message ?: "모임을 찾을 수 없습니다.",
             ),
+        )
+        
+    @ExceptionHandler(SeminarNotFoundException::class)
+    fun handleSeminarNotFound(
+        exception: SeminarNotFoundException
+    ): ResponseEntity<ApiErrorResponse> = 
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ApiErrorResponse(
+                code = "SEMINAR_NOT_FOUND",
+                message = exception.message ?: "세미나를 찾을 수 없습니다."
+            )
+        )
+        
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFound(
+        exception: UserNotFoundException
+    ): ResponseEntity<ApiErrorResponse> = 
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ApiErrorResponse(
+                code = "USER_NOT_FOUND",
+                message = exception.message ?: "사용자를 찾을 수 없습니다."
+            )
+        )
+    
+    @ExceptionHandler(UserEmailAlreadyExistsException::class)
+    fun handleUserEmailAlreadyExists(
+        exception: UserEmailAlreadyExistsException
+    ): ResponseEntity<ApiErrorResponse> = 
+        ResponseEntity.status(HttpStatus.CONFLICT).body(
+            ApiErrorResponse(
+                code = "USER_EMAIL_ALREADY_EXISTS",
+                message = exception.message ?: "이미 존재하는 이메일입니다."
+            )
+        )
+    
+    @ExceptionHandler(UserIsNotPendingException::class)
+    fun handleUserIsNotPending(
+        exception: UserIsNotPendingException
+    ): ResponseEntity<ApiErrorResponse> = 
+        ResponseEntity.status(HttpStatus.CONFLICT).body(
+            ApiErrorResponse(
+                code = "USER_IS_NOT_PENDING",
+                message = exception.message ?: "사용자가 PENDING 상태가 아닙니다."
+            )
         )
 }
