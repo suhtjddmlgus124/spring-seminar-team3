@@ -63,7 +63,7 @@ class EnrollmentService(
 
         // 신청 기간 안이고 정원이 남아 있어야 한다. 두 조건을 합친 것이 OPEN 이다.
         val enrolledCount = enrollmentRepository.countBySeminarId(seminarId)
-        if (seminarService.getStatus(seminar, enrolledCount) != SeminarStatus.OPEN) {
+        if (seminarService.getStatus(seminar, enrolledCount, Instant.now()) != SeminarStatus.OPEN) {
             throw SeminarIsNotOpenException()
         }
 
