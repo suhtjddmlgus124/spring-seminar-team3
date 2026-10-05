@@ -21,7 +21,7 @@ interface SessionRepository: ListCrudRepository<Session, Long>{
         AND (s.starts_at < target.starts_at OR (s.starts_at = target.starts_at AND s.id < target.id))
         """
     )
-    fun findBySeminarIdOrderByStartsAtAscIdAscWithRound(@Param("seminarId") seminarId: Long): Long
+    fun findRoundBySessionId(@Param("id") sessionId: Long): Long
 
     // @Query(
     //     """

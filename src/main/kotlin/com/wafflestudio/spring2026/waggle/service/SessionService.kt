@@ -33,8 +33,9 @@ class SessionService(
     //     return index + 1
     // }
     fun getSessionRound(session: Session): Long {
-        val sessionId = session.id!!
-        val round = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAscWithRound(sessionId)
+        sessionRepository.findByIdOrNull(session.id!!)
+        ?: throw SessionNotFoundException(session.id!!)
+        val round = sessionRepository.findRoundBySessionId(session.id!!)
 
         return round
 =======
