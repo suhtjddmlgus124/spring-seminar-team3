@@ -23,6 +23,7 @@ class SessionService(
     fun getSessions(seminar: Seminar): List<Session>
         = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAsc(seminar.id!!)
 
+<<<<<<< HEAD
     // fun getSessionRound(session: Session): Int {
     //     val sessionId = session.id!!
     //     val sessions = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAsc(session.seminarId)
@@ -36,5 +37,14 @@ class SessionService(
         val round = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAscWithRound(sessionId)
 
         return round
+=======
+    fun getSessionRound(session: Session): Int {
+        val sessionId = session.id!!
+        val sessions = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAsc(session.seminarId)
+        val index = sessions.indexOfFirst { it.id == sessionId }
+
+        if (index == -1) throw SessionNotFoundException(sessionId)
+        return index + 1
+>>>>>>> 8860b62 (Feat: GET Session 기능 구현)
     }
 }
