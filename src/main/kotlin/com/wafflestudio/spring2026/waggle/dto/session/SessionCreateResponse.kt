@@ -5,10 +5,10 @@ import com.wafflestudio.spring2026.waggle.model.Session
 data class SessionCreateResponse(
     val id: Long,
     val seminarId: Long,
-    val round: Int,
+    val round: Long,
 ) {
     companion object {
-        fun from(session: Session, round: Int): SessionCreateResponse
+        fun from(session: Session, round: Long): SessionCreateResponse
             = SessionCreateResponse(
                 id = session.id!!,
                 seminarId = session.seminarId,

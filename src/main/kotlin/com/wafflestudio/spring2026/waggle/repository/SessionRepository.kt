@@ -7,4 +7,15 @@ interface SessionRepository: ListCrudRepository<Session, Long>{
     fun countBySeminarId(seminarId: Long): Long
 
     fun findBySeminarIdOrderByStartsAtAscIdAsc(seminarId: Long): List<Session>
+
+    @Query(
+        """
+        SELECT COUNT(*) + 1 AS session_round
+        FROM sessions s
+        JOIN sessions target ON target.id = :id
+        WHERE s.seminar_id = target.seminar_id
+        AND (s.starts_at < target.starts_at OR (s.starts_at = target.starts_at AND s.id < target.id))
+        """
+    )
+    fun findBySeminarIdOrderByStartsAtAscIdAscWithRound(@Param("seminarId") seminarId: Long): Long
 }

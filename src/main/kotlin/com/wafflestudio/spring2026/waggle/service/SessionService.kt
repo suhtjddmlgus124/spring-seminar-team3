@@ -23,12 +23,18 @@ class SessionService(
     fun getSessions(seminar: Seminar): List<Session>
         = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAsc(seminar.id!!)
 
-    fun getSessionRound(session: Session): Int {
-        val sessionId = session.id!!
-        val sessions = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAsc(session.seminarId)
-        val index = sessions.indexOfFirst { it.id == sessionId }
+    // fun getSessionRound(session: Session): Int {
+    //     val sessionId = session.id!!
+    //     val sessions = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAsc(session.seminarId)
+    //     val index = sessions.indexOfFirst { it.id == sessionId }
 
-        if (index == -1) throw SessionNotFoundException(sessionId)
-        return index + 1
+    //     if (index == -1) throw SessionNotFoundException(sessionId)
+    //     return index + 1
+    // }
+    fun getSessionRound(session: Session): Long {
+        val sessionId = session.id!!
+        val round = sessionRepository.findBySeminarIdOrderByStartsAtAscIdAscWithRound(sessionId)
+
+        return round
     }
 }
