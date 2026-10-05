@@ -7,7 +7,7 @@ import com.wafflestudio.spring2026.waggle.model.Session
 data class SessionResponse(
     val id: Long,
     val seminarId: Long,
-    val round: Int,
+    val round: Long,
     val title: String,
     val startsAt: OffsetDateTime,
     val location: String,
@@ -16,7 +16,7 @@ data class SessionResponse(
     val assignmentContent: String?,
 ) {
     companion object {
-        fun from(session: Session, round: Int): SessionResponse
+        fun from(session: Session, round: Long): SessionResponse
             = SessionResponse(
                 id = session.id!!,
                 seminarId = session.seminarId,

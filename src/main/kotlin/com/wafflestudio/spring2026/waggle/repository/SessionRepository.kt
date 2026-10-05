@@ -4,6 +4,8 @@ import org.springframework.data.repository.ListCrudRepository
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.query.Param
 import com.wafflestudio.spring2026.waggle.model.Session
+import org.springframework.data.jdbc.repository.query.Query
+import org.springframework.data.repository.query.Param
 
 interface SessionRepository: ListCrudRepository<Session, Long>{
     fun countBySeminarId(seminarId: Long): Long
@@ -20,4 +22,14 @@ interface SessionRepository: ListCrudRepository<Session, Long>{
         """
     )
     fun findBySeminarIdOrderByStartsAtAscIdAscWithRound(@Param("seminarId") seminarId: Long): Long
+
+    // @Query(
+    //     """
+    //     SELECT *, ROW_NUMBER() OVER (ORDER BY starts_at ASC, id ASC) AS sessions_round
+    //     FROM sessions
+    //     WHERE seminar_id = :seminarId
+    //     ORDER BY sessions_round ASC
+    //     """
+    // )
+    // fun findAllBySeminarIdOrderByStartsAtAscIdAscWithRound(@Param("seminarId") seminarId: Long): List<SessionRoundInfo>
 }
