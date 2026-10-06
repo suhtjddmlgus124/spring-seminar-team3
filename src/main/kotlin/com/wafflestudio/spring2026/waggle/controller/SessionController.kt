@@ -22,7 +22,6 @@ class SeminarSessionController(
     private val sessionService: SessionService,
     private val seminarService: SeminarService,
 ) {
-
     @GetMapping
     fun getSessions(
         @PathVariable("seminarId") seminarId: Long,
@@ -35,6 +34,17 @@ class SeminarSessionController(
         }
         return ResponseEntity.ok(response)
     }
+    
+    @PostMapping
+    fun createSession(
+        @PathVariable("seminarId") seminarId: Long,
+        @Valid @RequestBody request: SessionCreateRequest,
+    ): ResponseEntity<SessionCreateResponse> {
+        val response = sessionService.createSession(seminarId, request)
+        return ResponseEntity
+            .created(URI.create("/sessions/${response.id}"))
+            .body(response)
+    }   
 }
 
 @RequestMapping("/sessions")
