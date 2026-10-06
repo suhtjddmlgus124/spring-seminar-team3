@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service
 import com.wafflestudio.spring2026.waggle.model.Seminar
 import com.wafflestudio.spring2026.waggle.model.Session
 import com.wafflestudio.spring2026.waggle.repository.SessionRepository
+import com.wafflestudio.spring2026.waggle.dto.session.SessionCreateRequest
+import com.wafflestudio.spring2026.waggle.dto.session.SessionCreateResponse
+import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
 
 class SessionNotFoundException(sessionId: Long): RuntimeException(
     "ID가 ${sessionId}인 회차를 찾을 수 없습니다."
@@ -14,9 +17,8 @@ class SessionNotFoundException(sessionId: Long): RuntimeException(
 @Service
 class SessionService(
     private val sessionRepository: SessionRepository,
+    private val seminarRepository: SeminarRepository,
 ) {
-    
-
     fun getSession(id: Long): Session
         = sessionRepository.findByIdOrNull(id) ?: throw SessionNotFoundException(id)
 
@@ -35,7 +37,30 @@ class SessionService(
         sessionRepository.findByIdOrNull(session.id!!)
         ?: throw SessionNotFoundException(session.id)
         val round = sessionRepository.findRoundBySessionId(session.id)
-
         return round
+    }
+        
+    fun createSession(seminarId: Long, request: SessionCreateRequest): SessionCreateResponse {
+        if (!seminarRepository.existsById(seminarId)) {
+            throw SeminarNotFoundException(seminarId)
+        }
+        val session = sessionRepository.save(
+            Session(
+                title = request.title,
+                startsAt = request.startsAt.toInstant(),
+                location = request.location,
+                assignmentTitle = request.assignmentTitle,
+                lectureContent = request.lectureContent,
+                assignmentContent = request.assignmentContent,
+                seminarId = seminarId,
+            )
+        )
+        val round = sessionRepository.findRoundBySessionId(session.id!!)
+
+        return SessionCreateResponse(
+            id = session.id,
+            seminarId = session.seminarId,
+            round = round,
+        )
     }
 }
