@@ -15,8 +15,8 @@ interface SessionRepository: ListCrudRepository<Session, Long>{
         SELECT COUNT(*) + 1 AS session_round
         FROM sessions s
         JOIN sessions target ON target.id = :id
-        WHERE s.seminar_id = target.seminar_id
-        AND (s.starts_at < target.starts_at OR (s.starts_at = target.starts_at AND s.id < target.id))
+        WHERE s.seminarId = target.seminarId
+        AND (s.startsAt < target.startsAt OR (s.startsAt = target.startsAt AND s.id < target.id))
         """
     )
     fun findRoundBySessionId(@Param("id") sessionId: Long): Long

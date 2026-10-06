@@ -11,6 +11,7 @@ import com.wafflestudio.spring2026.waggle.service.RookieIsNotApprovedException
 import com.wafflestudio.spring2026.waggle.service.SeminarIsNotOpenException
 import com.wafflestudio.spring2026.waggle.service.AlreadyEnrolledException
 import com.wafflestudio.spring2026.waggle.service.EnrollmentPeriodClosedException
+import com.wafflestudio.spring2026.waggle.service.SessionNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -157,6 +158,17 @@ class GlobalExceptionHandler {
             ApiErrorResponse(
                 code = "ENROLLMENT_PERIOD_CLOSED",
                 message = exception.message ?: "신청 기간에만 취소할 수 있습니다."
+            )
+        )
+        
+    @ExceptionHandler(SessionNotFoundException::class)
+    fun handleSessionNotFound(
+        exception: SessionNotFoundException
+    ): ResponseEntity<ApiErrorResponse> = 
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ApiErrorResponse(
+                code = "SESSION_NOT_FOUND",
+                message = exception.message ?: "회차가 존재하지 않습니다."
             )
         )
 }
