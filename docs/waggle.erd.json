@@ -37,7 +37,8 @@
       "AQIhULu4ppmUgNZY_W5Hz",
       "3GeAO4ivs9rGdyx7UDpjs",
       "v4qp570wpzSvCPaFr2sjS",
-      "0A_z633_OjMYNiyakAaNz"
+      "0A_z633_OjMYNiyakAaNz",
+      "c_v64b2y-c1s4rcm8-rMh"
     ],
     "relationshipIds": [
       "vcQIpTUfg7qw9wxsqavXV",
@@ -237,6 +238,31 @@
         "meta": {
           "updateAt": 1790673733805,
           "createAt": 1790152466747
+        }
+      },
+      "c_v64b2y-c1s4rcm8-rMh": {
+        "id": "c_v64b2y-c1s4rcm8-rMh",
+        "name": "token_blacklist",
+        "comment": "로그아웃으로 인해 블랙리스트된 토큰을 기록합니다.",
+        "columnIds": [
+          "NUGRI6RGl2p6XSRltYBw8",
+          "WvfowCtcvhTKpvbyfrD6d"
+        ],
+        "seqColumnIds": [
+          "NUGRI6RGl2p6XSRltYBw8",
+          "WvfowCtcvhTKpvbyfrD6d"
+        ],
+        "ui": {
+          "x": 814.8083,
+          "y": -109.5741,
+          "zIndex": 331,
+          "widthName": 80,
+          "widthComment": 282,
+          "color": ""
+        },
+        "meta": {
+          "updateAt": 1791378188747,
+          "createAt": 1791378012787
         }
       }
     },
@@ -1120,6 +1146,46 @@
           "updateAt": 1790675979473,
           "createAt": 1790675396672
         }
+      },
+      "NUGRI6RGl2p6XSRltYBw8": {
+        "id": "NUGRI6RGl2p6XSRltYBw8",
+        "tableId": "c_v64b2y-c1s4rcm8-rMh",
+        "name": "jti",
+        "comment": "JWT의 PK, UUID를 사용",
+        "dataType": "VARCHAR(36)",
+        "default": "",
+        "options": 10,
+        "ui": {
+          "keys": 1,
+          "widthName": 60,
+          "widthComment": 126,
+          "widthDataType": 75,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1791379064336,
+          "createAt": 1791378072518
+        }
+      },
+      "WvfowCtcvhTKpvbyfrD6d": {
+        "id": "WvfowCtcvhTKpvbyfrD6d",
+        "tableId": "c_v64b2y-c1s4rcm8-rMh",
+        "name": "exp",
+        "comment": "JWT의 만료 일시",
+        "dataType": "TIMESTAMP",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 91,
+          "widthDataType": 65,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1791378185801,
+          "createAt": 1791378123730
+        }
       }
     },
     "relationshipEntities": {
@@ -1128,6 +1194,8 @@
         "identification": false,
         "relationshipType": 4,
         "startRelationshipType": 2,
+        "onDelete": 1,
+        "onUpdate": 1,
         "start": {
           "tableId": "AQIhULu4ppmUgNZY_W5Hz",
           "columnIds": [
@@ -1156,6 +1224,8 @@
         "identification": false,
         "relationshipType": 4,
         "startRelationshipType": 2,
+        "onDelete": 1,
+        "onUpdate": 1,
         "start": {
           "tableId": "rGvlyiOjwOLYCZz1XxNb8",
           "columnIds": [
@@ -1184,6 +1254,8 @@
         "identification": false,
         "relationshipType": 4,
         "startRelationshipType": 2,
+        "onDelete": 1,
+        "onUpdate": 1,
         "start": {
           "tableId": "AQIhULu4ppmUgNZY_W5Hz",
           "columnIds": [
@@ -1212,6 +1284,8 @@
         "identification": false,
         "relationshipType": 4,
         "startRelationshipType": 1,
+        "onDelete": 1,
+        "onUpdate": 1,
         "start": {
           "tableId": "AQIhULu4ppmUgNZY_W5Hz",
           "columnIds": [
@@ -1240,6 +1314,8 @@
         "identification": false,
         "relationshipType": 4,
         "startRelationshipType": 2,
+        "onDelete": 1,
+        "onUpdate": 1,
         "start": {
           "tableId": "3GeAO4ivs9rGdyx7UDpjs",
           "columnIds": [
@@ -1263,39 +1339,13 @@
           "createAt": 1790154458742
         }
       },
-      "SwrdZ5iKHYe_QGSPlgR58": {
-        "id": "SwrdZ5iKHYe_QGSPlgR58",
-        "identification": false,
-        "relationshipType": 4,
-        "startRelationshipType": 2,
-        "start": {
-          "tableId": "rGvlyiOjwOLYCZz1XxNb8",
-          "columnIds": [
-            "pWbQqjmZll8BF_htKV3MM"
-          ],
-          "x": 648.7722,
-          "y": 177.8102,
-          "direction": 2
-        },
-        "end": {
-          "tableId": "0A_z633_OjMYNiyakAaNz",
-          "columnIds": [
-            "pSh5Jbt-2WDZB8ylUdxu0"
-          ],
-          "x": 1010.6926,
-          "y": 514.5373999999999,
-          "direction": 1
-        },
-        "meta": {
-          "updateAt": 1790154476518,
-          "createAt": 1790154476518
-        }
-      },
       "i4I8fUTfQ73ZNOQxUMl9R": {
         "id": "i4I8fUTfQ73ZNOQxUMl9R",
         "identification": false,
         "relationshipType": 4,
         "startRelationshipType": 2,
+        "onDelete": 1,
+        "onUpdate": 1,
         "start": {
           "tableId": "v4qp570wpzSvCPaFr2sjS",
           "columnIds": [
@@ -1338,24 +1388,6 @@
           "updateAt": 1790258792680,
           "createAt": 1790257613452
         }
-      },
-      "zyvaBzRp0TK0f7DFsXcSM": {
-        "id": "zyvaBzRp0TK0f7DFsXcSM",
-        "name": "UQ_participations_rookieId_sessionId",
-        "tableId": "0A_z633_OjMYNiyakAaNz",
-        "indexColumnIds": [
-          "wQ0nDhYNTpf7PxTNoDrWK",
-          "Yn4TXnD2yYr8lWEXTY61O"
-        ],
-        "seqIndexColumnIds": [
-          "wQ0nDhYNTpf7PxTNoDrWK",
-          "Yn4TXnD2yYr8lWEXTY61O"
-        ],
-        "unique": true,
-        "meta": {
-          "updateAt": 1790260564718,
-          "createAt": 1790257899623
-        }
       }
     },
     "indexColumnEntities": {
@@ -1377,26 +1409,6 @@
         "meta": {
           "updateAt": 1790257616339,
           "createAt": 1790257616339
-        }
-      },
-      "wQ0nDhYNTpf7PxTNoDrWK": {
-        "id": "wQ0nDhYNTpf7PxTNoDrWK",
-        "indexId": "zyvaBzRp0TK0f7DFsXcSM",
-        "columnId": "pSh5Jbt-2WDZB8ylUdxu0",
-        "orderType": 1,
-        "meta": {
-          "updateAt": 1790257901275,
-          "createAt": 1790257901275
-        }
-      },
-      "Yn4TXnD2yYr8lWEXTY61O": {
-        "id": "Yn4TXnD2yYr8lWEXTY61O",
-        "indexId": "zyvaBzRp0TK0f7DFsXcSM",
-        "columnId": "WvlDnTBh5XTSm-W0SksrN",
-        "orderType": 1,
-        "meta": {
-          "updateAt": 1790257901873,
-          "createAt": 1790257901873
         }
       }
     },
