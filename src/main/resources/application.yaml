@@ -12,3 +12,8 @@ spring:
 
 server:
   port: 8080
+
+jwt:
+  # Access Token 서명 키(HS256). UTF-8 로 32바이트 이상이어야 합니다.
+  # 공개 저장소라 여기 적은 값은 개발용입니다. 배포할 때는 환경 변수 JWT_SECRET 으로 덮어쓰세요.
+  secret: ${JWT_SECRET:waggle-local-development-secret-change-me}

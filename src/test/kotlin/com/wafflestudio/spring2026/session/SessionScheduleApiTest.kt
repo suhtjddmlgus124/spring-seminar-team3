@@ -1,9 +1,6 @@
 package com.wafflestudio.spring2026.session
 
 import com.wafflestudio.spring2026.support.ApiIntegrationTest
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
 import kotlin.test.Test
 import kotlin.test.assertFalse
 
@@ -24,8 +21,9 @@ class SessionScheduleApiTest : ApiIntegrationTest() {
             title = "Earlier session",
             lectureContent = "Earlier lecture",
         )
+        val admin = adminToken()
 
-        val listBody = mockMvc.get("/seminars/$seminarId/sessions").andExpect {
+        val listBody = getAs(admin, "/seminars/$seminarId/sessions").andExpect {
             status { isOk() }
             jsonPath("$.length()") { value(2) }
             jsonPath("$[0].id") { value(earlierSessionId) }
@@ -38,7 +36,7 @@ class SessionScheduleApiTest : ApiIntegrationTest() {
         assertFalse(listedSessions[0].has("lectureContent"))
         assertFalse(listedSessions[0].has("assignmentContent"))
 
-        mockMvc.get("/sessions/$laterSessionId").andExpect {
+        getAs(admin, "/sessions/$laterSessionId").andExpect {
             status { isOk() }
             jsonPath("$.seminarId") { value(seminarId) }
             jsonPath("$.round") { value(2) }
@@ -51,36 +49,61 @@ class SessionScheduleApiTest : ApiIntegrationTest() {
     fun `유효하지 않은 회차 요청은 400을 반환한다`() {
         val seminarId = createSeminar()
 
-        mockMvc.post("/seminars/$seminarId/sessions") {
-            contentType = MediaType.APPLICATION_JSON
-            content = """{"startsAt":"${now().plusDays(1)}"}"""
-        }.andExpect {
+        postAs(adminToken(), "/seminars/$seminarId/sessions", """{"startsAt":"${now().plusDays(1)}"}""").andExpect {
             status { isBadRequest() }
         }
     }
 
     @Test
     fun `없는 회차 리소스는 404를 반환한다`() {
-        mockMvc.post("/seminars/999999/sessions") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(
-                mapOf(
-                    "title" to "Session",
-                    "startsAt" to now().plusDays(1).toString(),
-                    "location" to "Room 208",
-                    "assignmentTitle" to "Assignment",
-                ),
-            )
-        }.andExpect {
+        val admin = adminToken()
+        postAs(admin, "/seminars/999999/sessions", sessionBody()).andExpect {
             status { isNotFound() }
         }
 
-        mockMvc.get("/seminars/999999/sessions").andExpect {
+        getAs(admin, "/seminars/999999/sessions").andExpect {
             status { isNotFound() }
         }
 
-        mockMvc.get("/sessions/999999").andExpect {
+        getAs(admin, "/sessions/999999").andExpect {
             status { isNotFound() }
+        }
+    }
+
+    @Test
+    fun `회차 수정 요청이 유효하지 않으면 400, 없는 회차는 404를 반환한다`() {
+        val seminarId = createSeminar()
+        val sessionId = createSession(seminarId)
+        val admin = adminToken()
+
+        patchAs(admin, "/sessions/$sessionId", """{"title":"   "}""").andExpect { status { isBadRequest() } }
+        patchAs(admin, "/sessions/$sessionId", """{"location":""}""").andExpect { status { isBadRequest() } }
+        patchAs(admin, "/sessions/$sessionId", """{"assignmentTitle":" "}""").andExpect { status { isBadRequest() } }
+
+        patchAs(admin, "/sessions/999999", mapOf("title" to "Updated title")).andExpect { status { isNotFound() } }
+    }
+
+    @Test
+    fun `회차의 시작 시각을 바꾸면 회차 번호가 다시 매겨진다`() {
+        val seminarId = createSeminar()
+        val current = now()
+        val firstId = createSession(seminarId, startsAt = current.plusDays(1), title = "First session")
+        val secondId = createSession(seminarId, startsAt = current.plusDays(2), title = "Second session")
+        val admin = adminToken()
+
+        patchAs(admin, "/sessions/$firstId", mapOf("startsAt" to current.plusDays(3).toString())).andExpect {
+            status { isOk() }
+            jsonPath("$.id") { value(firstId) }
+            jsonPath("$.round") { value(2) }
+            jsonPath("$.title") { value("First session") }
+        }
+
+        getAs(admin, "/seminars/$seminarId/sessions").andExpect {
+            status { isOk() }
+            jsonPath("$[0].id") { value(secondId) }
+            jsonPath("$[0].round") { value(1) }
+            jsonPath("$[1].id") { value(firstId) }
+            jsonPath("$[1].round") { value(2) }
         }
     }
 }
