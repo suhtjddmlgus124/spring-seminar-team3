@@ -43,3 +43,8 @@ out/
 .agent/
 .claude/
 .codex/
+
+### 운영진 로컬 전용 ###
+.gstack/
+deploy/
+V1__init.template.sql
