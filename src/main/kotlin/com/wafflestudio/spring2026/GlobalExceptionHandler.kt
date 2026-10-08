@@ -6,6 +6,7 @@ import com.wafflestudio.spring2026.waggle.service.UserNotFoundException
 import com.wafflestudio.spring2026.waggle.service.UserEmailAlreadyExistsException
 import com.wafflestudio.spring2026.waggle.service.UserIsNotPendingException
 import com.wafflestudio.spring2026.waggle.service.EnrollmentNotFoundException
+import com.wafflestudio.spring2026.waggle.service.MyEnrollmentNotFoundException
 import com.wafflestudio.spring2026.waggle.service.UserIsNotRookieException
 import com.wafflestudio.spring2026.waggle.service.RookieIsNotApprovedException
 import com.wafflestudio.spring2026.waggle.service.SeminarIsNotOpenException
@@ -15,6 +16,7 @@ import com.wafflestudio.spring2026.waggle.service.SessionNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
+import com.wafflestudio.spring2026.auth.InvalidCredentialsException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -39,6 +41,13 @@ class GlobalExceptionHandler {
             ),
         )
     }
+
+    @ExceptionHandler(InvalidCredentialsException::class)
+    fun handleInvalidCredentials(
+        e: InvalidCredentialsException,
+    ): ResponseEntity<ApiErrorResponse> = ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(ApiErrorResponse(code = "INVALID_CREDENTIALS", message = e.message!!))
 
     @ExceptionHandler(MeetingNotFoundException::class)
     fun handleMeetingNotFound(
@@ -94,6 +103,13 @@ class GlobalExceptionHandler {
                 message = exception.message ?: "사용자가 PENDING 상태가 아닙니다."
             )
         )
+
+    @ExceptionHandler(MyEnrollmentNotFoundException::class)
+    fun handleMyEnrollmentNotFound(
+        e: MyEnrollmentNotFoundException,
+    ): ResponseEntity<ApiErrorResponse> = ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body(ApiErrorResponse(code = "ENROLLMENT_NOT_FOUND", message = e.message!!))
 
     @ExceptionHandler(EnrollmentNotFoundException::class)
     fun handleEnrollmentNotFound(
