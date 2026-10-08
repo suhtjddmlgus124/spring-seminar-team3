@@ -7,4 +7,6 @@ interface EnrollmentRepository: ListCrudRepository<Enrollment, Long> {
     fun countBySeminarId(seminarId: Long): Long
 
     fun existsBySeminarIdAndRookieId(seminarId: Long, rookieId: Long): Boolean
+
+    fun findBySeminarIdAndRookieId(seminarId: Long, rookieId: Long): Enrollment?
 }

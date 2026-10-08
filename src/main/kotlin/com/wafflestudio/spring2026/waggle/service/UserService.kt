@@ -2,6 +2,7 @@ package com.wafflestudio.spring2026.waggle.service
 
 import java.time.Instant
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import com.wafflestudio.spring2026.waggle.model.User
 import com.wafflestudio.spring2026.waggle.model.UserRole
@@ -26,6 +27,7 @@ class UserIsNotPendingException: RuntimeException(
 class UserService(
     private val userRepository: UserRepository,
     private val seminarRepository: SeminarRepository,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     fun createUser(
         email: String,
@@ -46,7 +48,9 @@ class UserService(
         
         val user = User(
             email = email,
-            password = password, // TODO: SECURITY! - 임시로 비밀번호를 해쉬하지 않고 원문으로 저장함. 배포 환경에서는 반드시 수정해야 함.
+            // 원문 대신 BCrypt Hash 를 저장한다. DB 가 새어도 비밀번호 자체는 남지 않는다.
+            // encode 의 반환 타입이 String? 로 선언돼 있지만 BCrypt 는 null 을 돌려주지 않는다.
+            password = requireNotNull(passwordEncoder.encode(password)),
             name = name,
             githubUsername = githubUsername,
             role = role,
