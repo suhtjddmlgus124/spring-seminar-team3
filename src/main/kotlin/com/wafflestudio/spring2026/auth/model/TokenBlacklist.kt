@@ -1,4 +1,4 @@
-package com.wafflestudio.spring2026.waggle.model
+package com.wafflestudio.spring2026.auth.model
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column

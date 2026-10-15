@@ -1,7 +1,7 @@
 package com.wafflestudio.spring2026.auth
 
-import com.wafflestudio.spring2026.waggle.model.TokenBlacklist
-import com.wafflestudio.spring2026.waggle.repository.TokenBlacklistRepository
+import com.wafflestudio.spring2026.auth.model.TokenBlacklist
+import com.wafflestudio.spring2026.auth.repository.TokenBlacklistRepository
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate
 import org.springframework.stereotype.Service
 import java.time.Instant
