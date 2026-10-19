@@ -17,6 +17,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import com.wafflestudio.spring2026.auth.InvalidCredentialsException
+import com.wafflestudio.spring2026.auth.ForbiddenException
+import com.wafflestudio.spring2026.waggle.dto.InvalidPageRequestException
+import com.wafflestudio.spring2026.waggle.service.InvalidApplicantRoleException
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -41,6 +45,28 @@ class GlobalExceptionHandler {
             ),
         )
     }
+
+    /** 쿼리 파라미터의 status·role 처럼 enum 으로 바꿀 수 없는 값이 오면 400 이다. */
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleMethodArgumentTypeMismatch(
+        e: MethodArgumentTypeMismatchException,
+    ): ResponseEntity<ApiErrorResponse> = ResponseEntity
+        .badRequest()
+        .body(ApiErrorResponse(code = "INVALID_REQUEST", message = "${e.name} 의 값이 올바르지 않습니다."))
+
+    @ExceptionHandler(InvalidPageRequestException::class, InvalidApplicantRoleException::class)
+    fun handleInvalidQuery(
+        e: RuntimeException,
+    ): ResponseEntity<ApiErrorResponse> = ResponseEntity
+        .badRequest()
+        .body(ApiErrorResponse(code = "INVALID_REQUEST", message = e.message!!))
+
+    @ExceptionHandler(ForbiddenException::class)
+    fun handleForbidden(
+        e: ForbiddenException,
+    ): ResponseEntity<ApiErrorResponse> = ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
+        .body(ApiErrorResponse(code = "FORBIDDEN", message = e.message!!))
 
     @ExceptionHandler(InvalidCredentialsException::class)
     fun handleInvalidCredentials(

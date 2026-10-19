@@ -10,6 +10,8 @@ import com.wafflestudio.spring2026.waggle.model.UserRole
 import com.wafflestudio.spring2026.waggle.model.UserStatus
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
+import com.wafflestudio.spring2026.waggle.dto.PageQuery
+import com.wafflestudio.spring2026.waggle.dto.PageResponse
 
 class EnrollmentNotFoundException(enrollmentId: Long): RuntimeException(
     "ID가 ${enrollmentId}인 수강 신청을 찾을 수 없습니다."
@@ -113,5 +115,12 @@ class EnrollmentService(
             throw EnrollmentPeriodClosedException()
         }
         enrollmentRepository.delete(enrollment)
+    }
+
+    /** 내 수강 목록. 최근 신청 순, 신청 일시가 같으면 ID 내림차순. */
+    fun getMyEnrollments(rookieId: Long, query: PageQuery): PageResponse<Enrollment> {
+        val enrollments = enrollmentRepository.findPageByRookieId(rookieId, query.size, query.offset)
+        val total = enrollmentRepository.countByRookieId(rookieId)
+        return PageResponse.of(enrollments, query, total)
     }
 }
