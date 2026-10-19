@@ -10,6 +10,8 @@ import com.wafflestudio.spring2026.waggle.model.UserRole
 import com.wafflestudio.spring2026.waggle.model.UserStatus
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
+import com.wafflestudio.spring2026.waggle.dto.PageQuery
+import com.wafflestudio.spring2026.waggle.dto.PageResponse
 
 class EnrollmentNotFoundException(enrollmentId: Long): RuntimeException(
     "ID가 ${enrollmentId}인 수강 신청을 찾을 수 없습니다."
@@ -29,6 +31,10 @@ class SeminarIsNotOpenException: RuntimeException(
 
 class AlreadyEnrolledException: RuntimeException(
     "이미 신청한 세미나입니다."
+)
+
+class MyEnrollmentNotFoundException(seminarId: Long): RuntimeException(
+    "ID가 ${seminarId}인 세미나에 신청한 내역이 없습니다."
 )
 
 class EnrollmentPeriodClosedException: RuntimeException(
@@ -91,6 +97,14 @@ class EnrollmentService(
     }
 
     /**
+     * 요청자 본인의 신청을 찾는다. 3주차부터 수강 취소는 신청 ID 가 아니라 토큰으로 대상을 정한다.
+     * 신청한 적이 없으면 404 다. 남의 신청을 지울 경로 자체가 없다.
+     */
+    fun getMyEnrollment(seminarId: Long, rookieId: Long): Enrollment =
+        enrollmentRepository.findBySeminarIdAndRookieId(seminarId, rookieId)
+            ?: throw MyEnrollmentNotFoundException(seminarId)
+
+    /**
      * 수강 취소. 레코드를 실제로 지우므로 enrolledCount 가 줄고 빈자리가 열린다.
      *
      * 정원이 차서 CLOSED 인 세미나라도 신청 기간 안이면 취소할 수 있다.
@@ -101,5 +115,12 @@ class EnrollmentService(
             throw EnrollmentPeriodClosedException()
         }
         enrollmentRepository.delete(enrollment)
+    }
+
+    /** 내 수강 목록. 최근 신청 순, 신청 일시가 같으면 ID 내림차순. */
+    fun getMyEnrollments(rookieId: Long, query: PageQuery): PageResponse<Enrollment> {
+        val enrollments = enrollmentRepository.findPageByRookieId(rookieId, query.size, query.offset)
+        val total = enrollmentRepository.countByRookieId(rookieId)
+        return PageResponse.of(enrollments, query, total)
     }
 }
