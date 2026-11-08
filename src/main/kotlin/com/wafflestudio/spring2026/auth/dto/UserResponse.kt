@@ -2,9 +2,9 @@ package com.wafflestudio.spring2026.auth.dto
 
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import com.wafflestudio.spring2026.waggle.model.User
-import com.wafflestudio.spring2026.waggle.model.UserRole
-import com.wafflestudio.spring2026.waggle.model.UserStatus
+import com.wafflestudio.spring2026.auth.model.User
+import com.wafflestudio.spring2026.auth.model.UserRole
+import com.wafflestudio.spring2026.auth.model.UserStatus
 
 data class UserResponse(
     val id: Long,

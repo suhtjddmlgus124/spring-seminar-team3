@@ -1,16 +1,17 @@
-package com.wafflestudio.spring2026.waggle.service
+package com.wafflestudio.spring2026.auth.service
 
 import java.time.Instant
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import com.wafflestudio.spring2026.waggle.model.User
-import com.wafflestudio.spring2026.waggle.model.UserRole
-import com.wafflestudio.spring2026.waggle.model.UserStatus
-import com.wafflestudio.spring2026.waggle.repository.UserRepository
+import com.wafflestudio.spring2026.auth.model.User
+import com.wafflestudio.spring2026.auth.model.UserRole
+import com.wafflestudio.spring2026.auth.model.UserStatus
+import com.wafflestudio.spring2026.auth.repository.UserRepository
 import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
 import com.wafflestudio.spring2026.PageQuery
 import com.wafflestudio.spring2026.PageResponse
+import com.wafflestudio.spring2026.waggle.service.SeminarNotFoundException
 
 class UserNotFoundException(userId: Long): RuntimeException(
     "ID가 ${userId}인 사용자를 찾을 수 없습니다."

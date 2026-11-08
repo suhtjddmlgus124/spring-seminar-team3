@@ -2,9 +2,9 @@ package com.wafflestudio.spring2026
 
 import com.wafflestudio.spring2026.meeting.MeetingNotFoundException
 import com.wafflestudio.spring2026.waggle.service.SeminarNotFoundException
-import com.wafflestudio.spring2026.waggle.service.UserNotFoundException
-import com.wafflestudio.spring2026.waggle.service.UserEmailAlreadyExistsException
-import com.wafflestudio.spring2026.waggle.service.UserIsNotPendingException
+import com.wafflestudio.spring2026.auth.service.UserNotFoundException
+import com.wafflestudio.spring2026.auth.service.UserEmailAlreadyExistsException
+import com.wafflestudio.spring2026.auth.service.UserIsNotPendingException
 import com.wafflestudio.spring2026.waggle.service.EnrollmentNotFoundException
 import com.wafflestudio.spring2026.waggle.service.MyEnrollmentNotFoundException
 import com.wafflestudio.spring2026.waggle.service.UserIsNotRookieException
@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import com.wafflestudio.spring2026.auth.service.InvalidCredentialsException
 import com.wafflestudio.spring2026.auth.ForbiddenException
-import com.wafflestudio.spring2026.waggle.service.InvalidApplicantRoleException
+import com.wafflestudio.spring2026.auth.service.InvalidApplicantRoleException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice

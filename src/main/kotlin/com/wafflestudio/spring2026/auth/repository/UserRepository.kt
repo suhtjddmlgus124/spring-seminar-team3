@@ -1,9 +1,9 @@
-package com.wafflestudio.spring2026.waggle.repository
+package com.wafflestudio.spring2026.auth.repository
 
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.ListCrudRepository
 import org.springframework.data.repository.query.Param
-import com.wafflestudio.spring2026.waggle.model.User
+import com.wafflestudio.spring2026.auth.model.User
 
 interface UserRepository: ListCrudRepository<User, Long> {
     fun existsByEmail(email: String): Boolean

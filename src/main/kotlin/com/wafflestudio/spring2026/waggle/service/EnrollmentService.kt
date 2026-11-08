@@ -5,9 +5,9 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import com.wafflestudio.spring2026.waggle.model.Enrollment
 import com.wafflestudio.spring2026.waggle.model.Seminar
-import com.wafflestudio.spring2026.waggle.model.User
-import com.wafflestudio.spring2026.waggle.model.UserRole
-import com.wafflestudio.spring2026.waggle.model.UserStatus
+import com.wafflestudio.spring2026.auth.model.User
+import com.wafflestudio.spring2026.auth.model.UserRole
+import com.wafflestudio.spring2026.auth.model.UserStatus
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
 import com.wafflestudio.spring2026.PageQuery

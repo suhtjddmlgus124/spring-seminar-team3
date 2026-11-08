@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.RequestBody
 import jakarta.validation.Valid
-import com.wafflestudio.spring2026.waggle.service.UserService
+import com.wafflestudio.spring2026.auth.service.UserService
 import com.wafflestudio.spring2026.auth.dto.UserResponse
 import com.wafflestudio.spring2026.auth.dto.UserApprovalRequest
 import com.wafflestudio.spring2026.auth.AuthPrincipal
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import com.wafflestudio.spring2026.auth.AccessPolicy
 import com.wafflestudio.spring2026.PageQuery
 import com.wafflestudio.spring2026.PageResponse
-import com.wafflestudio.spring2026.waggle.model.UserRole
-import com.wafflestudio.spring2026.waggle.model.UserStatus
+import com.wafflestudio.spring2026.auth.model.UserRole
+import com.wafflestudio.spring2026.auth.model.UserStatus
 
 @RequestMapping("/users")
 @RestController

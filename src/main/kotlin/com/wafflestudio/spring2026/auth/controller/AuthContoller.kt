@@ -1,14 +1,21 @@
 package com.wafflestudio.spring2026.auth.controller
 
+import com.wafflestudio.spring2026.auth.AuthPrincipal
+import com.wafflestudio.spring2026.auth.dto.LoginRequest
+import com.wafflestudio.spring2026.auth.dto.LoginResponse
+import com.wafflestudio.spring2026.auth.dto.SignupRequest
+import com.wafflestudio.spring2026.auth.dto.UserResponse
+import com.wafflestudio.spring2026.auth.service.AuthService
+import com.wafflestudio.spring2026.auth.service.UserService
+import jakarta.validation.Valid
+import java.net.URI
+import java.time.Instant
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.RequestBody
-import 
 
 @RequestMapping("/auth")
 @RestController

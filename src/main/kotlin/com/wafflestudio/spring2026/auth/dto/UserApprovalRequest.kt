@@ -1,6 +1,6 @@
 package com.wafflestudio.spring2026.auth.dto
 
-import com.wafflestudio.spring2026.waggle.model.UserStatus
+import com.wafflestudio.spring2026.auth.model.UserStatus
 import jakarta.validation.constraints.AssertTrue
 
 data class UserApprovalRequest(
