@@ -1,4 +1,4 @@
-package com.wafflestudio.spring2026.auth
+package com.wafflestudio.spring2026.auth.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtException

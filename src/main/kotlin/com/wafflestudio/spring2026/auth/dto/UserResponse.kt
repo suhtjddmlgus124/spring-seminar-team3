@@ -1,4 +1,4 @@
-package com.wafflestudio.spring2026.waggle.dto.user
+package com.wafflestudio.spring2026.auth.dto
 
 import java.time.OffsetDateTime
 import java.time.ZoneOffset

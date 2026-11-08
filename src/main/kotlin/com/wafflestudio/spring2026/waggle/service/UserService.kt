@@ -9,9 +9,8 @@ import com.wafflestudio.spring2026.waggle.model.UserRole
 import com.wafflestudio.spring2026.waggle.model.UserStatus
 import com.wafflestudio.spring2026.waggle.repository.UserRepository
 import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
-import com.wafflestudio.spring2026.waggle.service.SeminarNotFoundException
-import com.wafflestudio.spring2026.waggle.dto.PageQuery
-import com.wafflestudio.spring2026.waggle.dto.PageResponse
+import com.wafflestudio.spring2026.PageQuery
+import com.wafflestudio.spring2026.PageResponse
 
 class UserNotFoundException(userId: Long): RuntimeException(
     "ID가 ${userId}인 사용자를 찾을 수 없습니다."

@@ -17,8 +17,8 @@ import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarCreateRequest
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarCreateResponse
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarUpdateRequest
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
-import com.wafflestudio.spring2026.waggle.dto.PageQuery
-import com.wafflestudio.spring2026.waggle.dto.PageResponse
+import com.wafflestudio.spring2026.PageQuery
+import com.wafflestudio.spring2026.PageResponse
 import com.wafflestudio.spring2026.waggle.model.Seminar
 import com.wafflestudio.spring2026.auth.AccessPolicy
 import com.wafflestudio.spring2026.auth.AuthPrincipal

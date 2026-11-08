@@ -1,4 +1,4 @@
-package com.wafflestudio.spring2026.auth
+package com.wafflestudio.spring2026.auth.service
 
 import com.wafflestudio.spring2026.auth.model.TokenBlacklist
 import com.wafflestudio.spring2026.auth.repository.TokenBlacklistRepository

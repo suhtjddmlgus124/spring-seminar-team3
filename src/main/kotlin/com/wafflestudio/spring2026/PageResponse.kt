@@ -1,4 +1,4 @@
-package com.wafflestudio.spring2026.waggle.dto
+package com.wafflestudio.spring2026
 
 class InvalidPageRequestException(message: String): RuntimeException(message)
 

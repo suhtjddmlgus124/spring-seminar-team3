@@ -1,4 +1,4 @@
-package com.wafflestudio.spring2026.waggle.dto.user
+package com.wafflestudio.spring2026.auth.dto
 
 import com.wafflestudio.spring2026.waggle.model.UserStatus
 import jakarta.validation.constraints.AssertTrue

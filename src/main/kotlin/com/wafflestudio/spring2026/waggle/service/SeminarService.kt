@@ -5,8 +5,8 @@ import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
 import com.wafflestudio.spring2026.waggle.repository.SessionRepository
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
-import com.wafflestudio.spring2026.waggle.dto.PageQuery
-import com.wafflestudio.spring2026.waggle.dto.PageResponse
+import com.wafflestudio.spring2026.PageQuery
+import com.wafflestudio.spring2026.PageResponse
 import java.time.Instant
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

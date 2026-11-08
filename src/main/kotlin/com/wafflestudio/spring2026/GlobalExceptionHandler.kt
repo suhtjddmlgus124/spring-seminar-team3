@@ -16,9 +16,8 @@ import com.wafflestudio.spring2026.waggle.service.SessionNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
-import com.wafflestudio.spring2026.auth.InvalidCredentialsException
+import com.wafflestudio.spring2026.auth.service.InvalidCredentialsException
 import com.wafflestudio.spring2026.auth.ForbiddenException
-import com.wafflestudio.spring2026.waggle.dto.InvalidPageRequestException
 import com.wafflestudio.spring2026.waggle.service.InvalidApplicantRoleException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.bind.annotation.ExceptionHandler
