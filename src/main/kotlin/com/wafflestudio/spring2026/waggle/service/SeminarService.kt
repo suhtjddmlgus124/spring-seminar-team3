@@ -76,7 +76,7 @@ class SeminarService(
     fun searchSeminars(keyword: String?, status: SeminarStatus?, query: PageQuery, now: Instant): PageResponse<Seminar> {
         val keywordPattern = keyword
             ?.takeIf { it.isNotBlank() }
-            ?.let { "%" + it.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%" }
+            ?.let { "%${it.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")}%" }
         val statusName = status?.name
 
         val seminars = seminarRepository.search(keywordPattern, statusName, now, query.size, query.offset)

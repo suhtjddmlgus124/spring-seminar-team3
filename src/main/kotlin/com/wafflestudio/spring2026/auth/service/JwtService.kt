@@ -18,7 +18,7 @@ import javax.crypto.SecretKey
  */
 @Service
 class JwtService(
-    @Value("\${jwt.secret}") secret: String,
+    @Value($$"${jwt.secret}") secret: String,
 ) {
     private val key: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray(Charsets.UTF_8))
 

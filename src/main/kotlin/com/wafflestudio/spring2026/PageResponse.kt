@@ -20,7 +20,7 @@ data class PageQuery(
             val resolvedPage = page ?: 0
             val resolvedSize = size ?: DEFAULT_SIZE
             if (resolvedPage < 0) throw InvalidPageRequestException("page 는 0 이상이어야 합니다.")
-            if (resolvedSize !in 1..MAX_SIZE) throw InvalidPageRequestException("size 는 1 이상 ${MAX_SIZE} 이하여야 합니다.")
+            if (resolvedSize !in 1..MAX_SIZE) throw InvalidPageRequestException("size 는 1 이상 $MAX_SIZE 이하여야 합니다.")
             return PageQuery(resolvedPage, resolvedSize)
         }
     }
