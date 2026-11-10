@@ -1,6 +1,7 @@
-package com.wafflestudio.spring2026.auth
+package com.wafflestudio.spring2026.config
 
 import com.wafflestudio.spring2026.ApiErrorResponse
+import com.wafflestudio.spring2026.auth.JwtAuthenticationFilter
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

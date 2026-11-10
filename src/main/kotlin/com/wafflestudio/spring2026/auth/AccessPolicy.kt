@@ -1,8 +1,8 @@
 package com.wafflestudio.spring2026.auth
 
-import com.wafflestudio.spring2026.waggle.model.User
-import com.wafflestudio.spring2026.waggle.model.UserRole
-import com.wafflestudio.spring2026.waggle.model.UserStatus
+import com.wafflestudio.spring2026.auth.model.User
+import com.wafflestudio.spring2026.auth.model.UserRole
+import com.wafflestudio.spring2026.auth.model.UserStatus
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
 import org.springframework.stereotype.Component
 

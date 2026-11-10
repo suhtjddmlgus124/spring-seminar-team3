@@ -1,6 +1,5 @@
 package com.wafflestudio.spring2026.waggle.service
 
-import java.time.Instant
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import com.wafflestudio.spring2026.waggle.model.Seminar

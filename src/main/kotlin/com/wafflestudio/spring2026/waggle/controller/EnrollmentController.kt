@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.wafflestudio.spring2026.auth.AccessPolicy
 import com.wafflestudio.spring2026.auth.AuthPrincipal
-import com.wafflestudio.spring2026.waggle.dto.PageQuery
-import com.wafflestudio.spring2026.waggle.dto.PageResponse
+import com.wafflestudio.spring2026.PageQuery
+import com.wafflestudio.spring2026.PageResponse
 import com.wafflestudio.spring2026.waggle.dto.enrollment.EnrolledSeminarResponse
 import com.wafflestudio.spring2026.waggle.dto.enrollment.MyEnrollmentResponse
 import org.springframework.web.bind.annotation.GetMapping
