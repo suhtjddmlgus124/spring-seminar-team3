@@ -1,25 +1,25 @@
-package com.wafflestudio.spring2026.waggle.dto.user
+package com.wafflestudio.spring2026.auth.dto
 
-import com.wafflestudio.spring2026.waggle.model.UserRole
+import com.wafflestudio.spring2026.auth.model.UserRole
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import jakarta.validation.constraints.AssertTrue
 
 data class SignupRequest(
-    @field:NotBlank("비어있을 수 없습니다.")
-    @field:Email("이메일 형식이어야 합니다.")
+    @field:NotBlank(message = "비어있을 수 없습니다.")
+    @field:Email(message = "이메일 형식이어야 합니다.")
     @field:Size(max = 255, message = "255자를 넘을 수 없습니다.")
     val email: String,
     
-    @field:NotBlank("비어있을 수 없습니다.")
+    @field:NotBlank(message = "비어있을 수 없습니다.")
     val password: String,
     
-    @field:NotBlank("비어있을 수 없습니다.")
+    @field:NotBlank(message = "비어있을 수 없습니다.")
     @field:Size(max = 255, message = "255자를 넘을 수 없습니다.")
     val name: String,
     
-    @field:NotBlank("비어있을 수 없습니다.")
+    @field:NotBlank(message = "비어있을 수 없습니다.")
     @field:Size(max = 255, message = "255자를 넘을 수 없습니다.")
     val githubUsername: String,
     
