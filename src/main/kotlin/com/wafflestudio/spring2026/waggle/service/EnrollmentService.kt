@@ -1,6 +1,7 @@
 package com.wafflestudio.spring2026.waggle.service
 
 import java.time.Instant
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import com.wafflestudio.spring2026.waggle.model.Enrollment
@@ -81,7 +82,28 @@ class EnrollmentService(
             rookieId = rookieId,
             seminarId = seminarId,
         )
-        return enrollmentRepository.save(enrollment)
+        return saveUnlessDuplicated(enrollment)
+    }
+
+    /**
+     * 같은 루키가 동시에 여러 번 신청하면 위의 exists 검사를 모두 통과할 수 있다(조회와 저장 사이의 경쟁).
+     * 그래서 최종 판단은 DB 의 UNIQUE(rookieId, seminarId) 가 한다.
+     * 그 제약 위반만 409(이미 신청)로 바꾸고, 다른 DB 오류는 숨기지 않고 그대로 던진다.
+     * 실패한 INSERT 는 행을 남기지 않으므로 빈자리를 소비하지 않는다.
+     */
+    private fun saveUnlessDuplicated(enrollment: Enrollment): Enrollment =
+        try {
+            enrollmentRepository.save(enrollment)
+        } catch (e: DuplicateKeyException) {
+            if (e.mostSpecificCause.message?.contains(ENROLLMENT_UNIQUE_KEY, ignoreCase = true) == true) {
+                throw AlreadyEnrolledException()
+            }
+            throw e
+        }
+
+    companion object {
+        /** V1__init.sql 의 UNIQUE INDEX 이름 */
+        private const val ENROLLMENT_UNIQUE_KEY = "UQ_enrollments_rookieId_seminarId"
     }
 
     /**

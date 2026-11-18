@@ -28,4 +28,19 @@ interface EnrollmentRepository: ListCrudRepository<Enrollment, Long> {
         @Param("limit") limit: Int,
         @Param("offset") offset: Long,
     ): List<Enrollment>
+
+    /** 대시보드 수강생 행. 수강 신청 ID 오름차순. */
+    @Query(
+        """
+        SELECT * FROM enrollments
+        WHERE seminarId = :seminarId
+        ORDER BY id ASC
+        LIMIT :limit OFFSET :offset
+        """
+    )
+    fun findPageBySeminarId(
+        @Param("seminarId") seminarId: Long,
+        @Param("limit") limit: Int,
+        @Param("offset") offset: Long,
+    ): List<Enrollment>
 }
