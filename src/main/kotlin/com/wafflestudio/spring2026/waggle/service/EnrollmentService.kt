@@ -158,6 +158,7 @@ class EnrollmentService(
         val total = enrollmentRepository.countByRookieId(rookieId)
         return PageResponse.of(enrollments, query, total)
     }
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
     fun updateEnrollment(
         seminarId: Long,
@@ -191,6 +192,7 @@ class EnrollmentService(
             ),
         )
     }
+    /** 신청·기록 수정과 같은 세미나 행을 잠그고, 연결된 기록과 수강 신청을 함께 삭제한다. */
     @Transactional(isolation = Isolation.READ_COMMITTED)
     fun cancelMyEnrollment(
         seminarId: Long,

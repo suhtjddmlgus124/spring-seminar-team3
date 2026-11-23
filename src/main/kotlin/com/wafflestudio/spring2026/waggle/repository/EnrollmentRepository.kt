@@ -1,5 +1,6 @@
 package com.wafflestudio.spring2026.waggle.repository
 
+import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.ListCrudRepository
 import org.springframework.data.repository.query.Param
@@ -13,6 +14,10 @@ interface EnrollmentRepository: ListCrudRepository<Enrollment, Long> {
     fun findBySeminarIdAndRookieId(seminarId: Long, rookieId: Long): Enrollment?
 
     fun countByRookieId(rookieId: Long): Long
+
+    @Modifying
+    @Query("DELETE FROM enrollments WHERE id = :id")
+    fun deleteByIdReturningCount(@Param("id") id: Long): Int
 
     /** 내 수강 목록. 최근 신청 순, 신청 일시가 같으면 ID 내림차순. */
     @Query(

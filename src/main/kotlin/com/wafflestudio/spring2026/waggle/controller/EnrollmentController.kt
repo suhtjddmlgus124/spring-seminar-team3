@@ -57,11 +57,7 @@ class EnrollmentController(
         @AuthenticationPrincipal principal: AuthPrincipal,
     ): ResponseEntity<Void> {
         accessPolicy.requireRookie(principal)
-        val seminar = seminarService.getSeminar(seminarId)
-        val enrollment = enrollmentService.getMyEnrollment(seminarId, principal.userId)
-
-        enrollmentService.deleteEnrollment(seminar, enrollment, now())
-
+        enrollmentService.cancelMyEnrollment(seminarId, principal.userId, now())
         return ResponseEntity.noContent().build()
     }
 
