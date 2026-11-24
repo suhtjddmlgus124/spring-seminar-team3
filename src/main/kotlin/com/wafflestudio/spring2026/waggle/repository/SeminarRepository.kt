@@ -12,6 +12,9 @@ import com.wafflestudio.spring2026.waggle.model.Seminar
  *   정원이 찼거나 신청 기간이 끝났으면 CLOSED, 시작 전이면 BEFORE, 나머지는 OPEN
  */
 interface SeminarRepository: ListCrudRepository<Seminar, Long> {
+    @Query("SELECT * FROM seminars WHERE id = :id FOR UPDATE")
+    fun findByIdForUpdate(@Param("id") id: Long): Seminar?
+
     @Query(
         """
         SELECT s.* FROM seminars s

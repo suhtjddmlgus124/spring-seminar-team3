@@ -4,6 +4,7 @@ import java.time.Instant
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import com.wafflestudio.spring2026.waggle.model.Enrollment
 import com.wafflestudio.spring2026.waggle.model.Seminar
 import com.wafflestudio.spring2026.auth.model.User
@@ -11,6 +12,7 @@ import com.wafflestudio.spring2026.auth.model.UserRole
 import com.wafflestudio.spring2026.auth.model.UserStatus
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
+import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
 import com.wafflestudio.spring2026.PageQuery
 import com.wafflestudio.spring2026.PageResponse
 
@@ -45,6 +47,7 @@ class EnrollmentPeriodClosedException: RuntimeException(
 @Service
 class EnrollmentService(
     private val enrollmentRepository: EnrollmentRepository,
+    private val seminarRepository: SeminarRepository,
     private val seminarService: SeminarService,
 ) {
     /**
@@ -57,6 +60,7 @@ class EnrollmentService(
      *  4. 세미나가 OPEN 이 아니면       409
      * 세미나와 사용자의 존재 여부(404)는 호출 전에 확인한다.
      */
+    @Transactional
     fun createEnrollment(seminar: Seminar, rookie: User, now: Instant): Enrollment {
         if (rookie.role != UserRole.ROOKIE) throw UserIsNotRookieException()
         if (rookie.status != UserStatus.APPROVED) throw RookieIsNotApprovedException()
@@ -64,20 +68,24 @@ class EnrollmentService(
         val seminarId = seminar.id!!
         val rookieId = rookie.id!!
 
+        // 세미나 행을 커밋까지 잠가 같은 세미나의 중복 확인, 정원 확인, 저장을 순서대로 처리한다.
+        val lockedSeminar = seminarRepository.findByIdForUpdate(seminarId)
+            ?: throw SeminarNotFoundException(seminarId)
+
         if (enrollmentRepository.existsBySeminarIdAndRookieId(seminarId, rookieId)) {
             throw AlreadyEnrolledException()
         }
 
         // 신청 기간 안이고 정원이 남아 있어야 한다. 두 조건을 합친 것이 OPEN 이다.
         val enrolledCount = enrollmentRepository.countBySeminarId(seminarId)
-        if (seminarService.getStatus(seminar, enrolledCount, Instant.now()) != SeminarStatus.OPEN) {
+        if (seminarService.getStatus(lockedSeminar, enrolledCount, Instant.now()) != SeminarStatus.OPEN) {
             throw SeminarIsNotOpenException()
         }
 
         val enrollment = Enrollment(
             // 잔여 Grace Day 는 세미나의 총량에서 시작한다.
             // 세미나의 총량이 나중에 바뀌어도 이미 신청한 사람의 잔여분이 흔들리지 않도록 값을 복사한다.
-            graceDaysRemaining = seminar.totalGraceDays,
+            graceDaysRemaining = lockedSeminar.totalGraceDays,
             createdAt = now,
             rookieId = rookieId,
             seminarId = seminarId,
