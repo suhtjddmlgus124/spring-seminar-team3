@@ -33,7 +33,7 @@ class BatchUpdateRecordsParser {
             val enrollmentIdNode = itemNode.get("enrollmentId")
                 ?: throw InvalidRecordUpdateRequestException("enrollmentId는 필수입니다.")
 
-            if (!enrollmentIdNode.isIntegralNumber || enrollmentIdNode.longValue() <= 0) {
+            if (!enrollmentIdNode.isIntegralNumber || !enrollmentIdNode.canConvertToLong() || enrollmentIdNode.longValue() <= 0) {
                 throw InvalidRecordUpdateRequestException("enrollmentId는 양의 정수여야 합니다.")
             }
 
@@ -42,15 +42,7 @@ class BatchUpdateRecordsParser {
                 throw InvalidRecordUpdateRequestException("중복된 enrollmentId가 포함되어 있습니다: $enrollmentId")
             }
 
-            val attendancePatch = parseEnumPatch(
-                parent = itemNode,
-                fieldName = "attendanceStatus",
-                parser = { raw ->
-                    runCatching { ParticipationAttendanceStatus.valueOf(raw) }.getOrElse {
-                        throw InvalidRecordUpdateRequestException("유효하지 않은 attendanceStatus 값입니다: $raw")
-                    }
-                },
-            )
+            val attendancePatch = parseAttendancePatch(itemNode)
 
             val assignmentPatch = parseEnumPatch(
                 parent = itemNode,
@@ -62,12 +54,32 @@ class BatchUpdateRecordsParser {
                 },
             )
 
+            if (attendancePatch == FieldPatch.Omitted && assignmentPatch == FieldPatch.Omitted) {
+                throw InvalidRecordUpdateRequestException("attendance 또는 assignmentStatus 중 하나 이상을 전달해야 합니다.")
+            }
+
             RecordUpdateCommand(
                 enrollmentId = enrollmentId,
                 attendanceStatus = attendancePatch,
                 assignmentStatus = assignmentPatch,
             )
         }
+    }
+
+    private fun parseAttendancePatch(parent: JsonNode): FieldPatch<ParticipationAttendanceStatus> {
+        fun parse(fieldName: String) = parseEnumPatch(parent, fieldName) { raw ->
+            runCatching { ParticipationAttendanceStatus.valueOf(raw) }.getOrElse {
+                throw InvalidRecordUpdateRequestException("유효하지 않은 $fieldName 값입니다: $raw")
+            }
+        }
+
+        val attendance = parse("attendance")
+        // 이전 요청의 attendanceStatus도 허용하되 두 이름으로 서로 다른 값을 보낼 수는 없다.
+        val legacyAttendance = parse("attendanceStatus")
+        if (attendance != FieldPatch.Omitted && legacyAttendance != FieldPatch.Omitted && attendance != legacyAttendance) {
+            throw InvalidRecordUpdateRequestException("attendance와 attendanceStatus 값이 서로 다릅니다.")
+        }
+        return if (attendance != FieldPatch.Omitted) attendance else legacyAttendance
     }
 
     private fun <T> parseEnumPatch(

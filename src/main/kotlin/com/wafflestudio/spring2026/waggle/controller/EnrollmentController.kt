@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.JsonNode
 import com.wafflestudio.spring2026.auth.AccessPolicy
 import com.wafflestudio.spring2026.auth.AuthPrincipal
 import com.wafflestudio.spring2026.PageQuery
@@ -18,7 +21,9 @@ import com.wafflestudio.spring2026.waggle.dto.enrollment.MyEnrollmentResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import com.wafflestudio.spring2026.waggle.dto.enrollment.EnrollmentCreateResponse
+import com.wafflestudio.spring2026.waggle.dto.enrollment.EnrollmentUpdateResponse
 import com.wafflestudio.spring2026.waggle.service.EnrollmentService
+import com.wafflestudio.spring2026.waggle.service.EnrollmentUpdateParser
 import com.wafflestudio.spring2026.waggle.service.SeminarService
 
 @RequestMapping("/seminars/{seminarId}/enrollments")
@@ -27,6 +32,7 @@ class EnrollmentController(
     private val enrollmentService: EnrollmentService,
     private val seminarService: SeminarService,
     private val accessPolicy: AccessPolicy,
+    private val enrollmentUpdateParser: EnrollmentUpdateParser,
 ) {
 
     /**
@@ -59,6 +65,22 @@ class EnrollmentController(
         accessPolicy.requireRookie(principal)
         enrollmentService.cancelMyEnrollment(seminarId, principal.userId, now())
         return ResponseEntity.noContent().build()
+    }
+
+    @PatchMapping("/{enrollmentId}")
+    fun updateEnrollment(
+        @PathVariable("seminarId") seminarId: Long,
+        @PathVariable("enrollmentId") enrollmentId: Long,
+        @RequestBody body: JsonNode,
+        @AuthenticationPrincipal principal: AuthPrincipal,
+    ): ResponseEntity<EnrollmentUpdateResponse> {
+        seminarService.getSeminar(seminarId)
+        enrollmentService.getEnrollment(seminarId, enrollmentId)
+        accessPolicy.requireSeminarManager(principal, seminarId)
+
+        val request = enrollmentUpdateParser.parse(body)
+        val enrollment = enrollmentService.updateEnrollment(seminarId, enrollmentId, request)
+        return ResponseEntity.ok(EnrollmentUpdateResponse.from(enrollment))
     }
 
     // Instant 는 시점 자체라 타임존 해석이 끼어들지 않는다.
