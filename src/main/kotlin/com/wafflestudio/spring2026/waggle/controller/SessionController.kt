@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import jakarta.validation.Valid
+import tools.jackson.databind.JsonNode
 import com.wafflestudio.spring2026.waggle.service.SeminarService
 import com.wafflestudio.spring2026.waggle.service.SessionService
+import com.wafflestudio.spring2026.waggle.service.ParticipationService
+import com.wafflestudio.spring2026.waggle.service.BatchUpdateRecordsParser
 import com.wafflestudio.spring2026.waggle.dto.session.SessionCreateRequest
 import com.wafflestudio.spring2026.waggle.dto.session.SessionCreateResponse
 import com.wafflestudio.spring2026.waggle.dto.session.SessionListResponse
@@ -42,7 +45,7 @@ class SeminarSessionController(
         }
         return ResponseEntity.ok(response)
     }
-    
+
     @PostMapping
     fun createSession(
         @PathVariable("seminarId") seminarId: Long,
@@ -54,7 +57,7 @@ class SeminarSessionController(
         return ResponseEntity
             .created(URI.create("/sessions/${response.id}"))
             .body(response)
-    }   
+    }
 }
 
 @RequestMapping("/sessions")
@@ -62,6 +65,8 @@ class SeminarSessionController(
 class SessionController(
     private val sessionService: SessionService,
     private val accessPolicy: AccessPolicy,
+    private val participationService: ParticipationService,
+    private val batchUpdateRecordsParser: BatchUpdateRecordsParser,
 ) {
     @GetMapping("/{id}")
     fun getSession(
@@ -86,9 +91,22 @@ class SessionController(
         accessPolicy.requireSeminarManager(principal, session.seminarId)
 
         val updated = sessionService.updateSession(session, request)
-        // startsAt 이 바뀌었으면 회차 번호도 달라지므로 저장한 뒤에 다시 센다.
         val round = sessionService.getSessionRound(updated)
 
         return ResponseEntity.ok(SessionResponse.from(updated, round))
+    }
+
+    @PatchMapping("/{sessionId}/records")
+    fun updateSessionRecords(
+        @PathVariable("sessionId") sessionId: Long,
+        @RequestBody body: JsonNode,
+        @AuthenticationPrincipal principal: AuthPrincipal,
+    ): ResponseEntity<Void> {
+        val session = sessionService.getSession(sessionId)
+        accessPolicy.requireSeminarManager(principal, session.seminarId)
+
+        val commands = batchUpdateRecordsParser.parse(body)
+        participationService.batchUpdateRecords(session, commands)
+        return ResponseEntity.noContent().build()
     }
 }

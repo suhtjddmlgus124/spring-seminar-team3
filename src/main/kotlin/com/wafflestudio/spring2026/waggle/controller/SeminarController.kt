@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.http.ResponseEntity
 import com.wafflestudio.spring2026.waggle.service.SeminarService
+import com.wafflestudio.spring2026.waggle.service.DashboardService
+import com.wafflestudio.spring2026.waggle.dto.dashboard.DashboardResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam
 @RestController
 class SeminarController(
     private val seminarService: SeminarService,
+    private val dashboardService: DashboardService,
     private val accessPolicy: AccessPolicy,
 ) {
 
@@ -61,6 +64,23 @@ class SeminarController(
         return ResponseEntity.ok(response)
     }
     
+    /**
+     * 대시보드. 없는 세미나(404)를 먼저 확인한 뒤 권한(403)을 본다. 403 과 404 가 겹치는 요청은 채점하지 않는다.
+     * page·size 가 정수가 아니면 MethodArgumentTypeMismatchException 으로 400, 범위 밖이면 PageQuery 가 400.
+     */
+    @GetMapping("/{id}/dashboard")
+    fun getDashboard(
+        @PathVariable("id") id: Long,
+        @RequestParam("page", required = false) page: Int?,
+        @RequestParam("size", required = false) size: Int?,
+        @AuthenticationPrincipal principal: AuthPrincipal,
+    ): ResponseEntity<DashboardResponse> {
+        val query = PageQuery.of(page, size)
+        val seminar = seminarService.getSeminar(id)
+        accessPolicy.requireDashboardViewer(principal, id)
+        return ResponseEntity.ok(dashboardService.getDashboard(seminar, query))
+    }
+
     @PostMapping
     fun createSeminar(
         @Valid @RequestBody request: SeminarCreateRequest,

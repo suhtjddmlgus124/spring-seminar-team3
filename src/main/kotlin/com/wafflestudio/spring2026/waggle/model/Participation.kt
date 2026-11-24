@@ -19,8 +19,8 @@ data class Participation(
     @Column("assignmentStatus")
     val assignmentStatus: ParticipationAssignmentStatus?,
 
-    @Column("rookieId")
-    val rookieId: Long,
+    @Column("enrollmentId")
+    val enrollmentId: Long,
 
     @Column("sessionId")
     val sessionId: Long,
