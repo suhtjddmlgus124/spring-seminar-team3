@@ -44,6 +44,10 @@ class AccessPolicy(
         throw ForbiddenException()
     }
 
+    /** 대시보드 조회: 회차 조회와 같다. 와장, 담당 운영진, 그 세미나를 수강 중인 루키(탈락 표시여도 신청이 남아 있으면 포함) */
+    fun requireDashboardViewer(principal: AuthPrincipal, seminarId: Long) =
+        requireSessionViewer(principal, seminarId)
+
     /** 수강 신청·취소, 내 수강 목록: 승인된 루키 */
     fun requireRookie(principal: AuthPrincipal) {
         val user = principal.user
