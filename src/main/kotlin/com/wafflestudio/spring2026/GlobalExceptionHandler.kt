@@ -22,6 +22,8 @@ import com.wafflestudio.spring2026.auth.service.InvalidApplicantRoleException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import com.wafflestudio.spring2026.waggle.dto.enrollment.InvalidEnrollmentUpdateRequestException
+
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -73,6 +75,22 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ApiErrorResponse> = ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
         .body(ApiErrorResponse(code = "INVALID_CREDENTIALS", message = e.message!!))
+
+    @ExceptionHandler(
+        InvalidRecordUpdateRequestException::class,
+        InvalidEnrollmentUpdateRequestException::class,
+        HttpMessageNotReadableException::class,
+    )
+    fun handleInvalidUpdateRequest(
+        e: Exception,
+    ): ResponseEntity<ApiErrorResponse> = ResponseEntity
+        .badRequest()
+        .body(
+            ApiErrorResponse(
+                code = "INVALID_REQUEST",
+                message = e.message ?: "요청값이 올바르지 않습니다.",
+            ),
+        )
 
     @ExceptionHandler(MeetingNotFoundException::class)
     fun handleMeetingNotFound(

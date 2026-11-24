@@ -15,6 +15,12 @@ import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
 import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
 import com.wafflestudio.spring2026.PageQuery
 import com.wafflestudio.spring2026.PageResponse
+import com.wafflestudio.spring2026.waggle.dto.enrollment.EnrollmentUpdateRequest
+import com.wafflestudio.spring2026.waggle.dto.enrollment.InvalidEnrollmentUpdateRequestException
+import com.wafflestudio.spring2026.waggle.repository.ParticipationRepository
+import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 
 class EnrollmentNotFoundException(enrollmentId: Long): RuntimeException(
     "ID가 ${enrollmentId}인 수강 신청을 찾을 수 없습니다."
@@ -49,6 +55,7 @@ class EnrollmentService(
     private val enrollmentRepository: EnrollmentRepository,
     private val seminarRepository: SeminarRepository,
     private val seminarService: SeminarService,
+    private val participationRepository: ParticipationRepository,
 ) {
     /**
      * 수강 신청. 선착순이라 별도 승인 없이 즉시 확정된다.
@@ -152,5 +159,38 @@ class EnrollmentService(
         val enrollments = enrollmentRepository.findPageByRookieId(rookieId, query.size, query.offset)
         val total = enrollmentRepository.countByRookieId(rookieId)
         return PageResponse.of(enrollments, query, total)
+    }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    fun updateEnrollment(
+        seminarId: Long,
+        enrollmentId: Long,
+        request: EnrollmentUpdateRequest,
+    ): Enrollment {
+        val seminar = seminarRepository.findByIdForUpdate(seminarId)
+            ?: throw SeminarNotFoundException(seminarId)
+
+        val enrollment = getEnrollment(seminarId, enrollmentId)
+
+        if (request.graceDaysRemaining == null && request.dropped == null) {
+            throw InvalidEnrollmentUpdateRequestException(
+                "수정할 항목을 하나 이상 보내야 합니다.",
+            )
+        }
+
+        val graceDaysRemaining = request.graceDaysRemaining
+            ?: enrollment.graceDaysRemaining
+
+        if (graceDaysRemaining !in 0..seminar.totalGraceDays) {
+            throw InvalidEnrollmentUpdateRequestException(
+                "잔여 Grace Day는 0 이상 ${seminar.totalGraceDays} 이하여야 합니다.",
+            )
+        }
+
+        return enrollmentRepository.save(
+            enrollment.copy(
+                graceDaysRemaining = graceDaysRemaining,
+                isFailed = request.dropped ?: enrollment.isFailed,
+            ),
+        )
     }
 }
