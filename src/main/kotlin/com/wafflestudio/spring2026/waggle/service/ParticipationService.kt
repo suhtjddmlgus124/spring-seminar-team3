@@ -31,59 +31,48 @@ class ParticipationService(
         val sessionId = session.id!!
 
         val enrollmentsById = commands.associate { command ->
-            val enrollment = enrollmentRepository.findByIdOrNull(
-                command.enrollmentId,
-            )
-
+            val enrollment = enrollmentRepository.findByIdOrNull(command.enrollmentId)
             if (enrollment == null || enrollment.seminarId != session.seminarId) {
                 throw EnrollmentNotFoundException(command.enrollmentId)
             }
-
             command.enrollmentId to enrollment
         }
 
         val results = commands.map { command ->
-            val enrollmentId = enrollmentsById.getValue(
-                command.enrollmentId,
-            ).id!!
+            val enrollmentId = enrollmentsById.getValue(command.enrollmentId).id!!
+            val existing = participationRepository.findByEnrollmentIdAndSessionId(enrollmentId, sessionId)
 
-            val existing = participationRepository.findByEnrollmentIdAndSessionId(
-                enrollmentId,
-                sessionId,
-            )
-
-            val attendance = when (val patch = command.attendanceStatus) {
+            val nextAttendance = when (val patch = command.attendanceStatus) {
                 FieldPatch.Omitted -> existing?.attendanceStatus
                 FieldPatch.Clear -> null
                 is FieldPatch.Set -> patch.value
             }
 
-            val assignment = when (val patch = command.assignmentStatus) {
+            val nextAssignment = when (val patch = command.assignmentStatus) {
                 FieldPatch.Omitted -> existing?.assignmentStatus
                 FieldPatch.Clear -> null
                 is FieldPatch.Set -> patch.value
             }
 
-            if (attendance == null && assignment == null) {
+            if (nextAttendance == null && nextAssignment == null) {
                 if (existing != null) {
                     participationRepository.delete(existing)
                 }
             } else {
-                participationRepository.save(
-                    Participation(
-                        id = existing?.id,
-                        attendanceStatus = attendance,
-                        assignmentStatus = assignment,
-                        enrollmentId = enrollmentId,
-                        sessionId = sessionId,
-                    ),
+                val toSave = Participation(
+                    id = existing?.id,
+                    attendanceStatus = nextAttendance,
+                    assignmentStatus = nextAssignment,
+                    enrollmentId = enrollmentId,
+                    sessionId = sessionId,
                 )
+                participationRepository.save(toSave)
             }
 
             SessionRecordResponse(
                 enrollmentId = enrollmentId,
-                attendanceStatus = attendance,
-                assignmentStatus = assignment,
+                attendanceStatus = nextAttendance,
+                assignmentStatus = nextAssignment,
             )
         }
 

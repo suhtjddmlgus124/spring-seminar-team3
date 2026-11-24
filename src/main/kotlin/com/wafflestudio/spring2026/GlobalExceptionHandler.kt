@@ -13,8 +13,10 @@ import com.wafflestudio.spring2026.waggle.service.SeminarIsNotOpenException
 import com.wafflestudio.spring2026.waggle.service.AlreadyEnrolledException
 import com.wafflestudio.spring2026.waggle.service.EnrollmentPeriodClosedException
 import com.wafflestudio.spring2026.waggle.service.SessionNotFoundException
+import com.wafflestudio.spring2026.waggle.dto.session.InvalidRecordUpdateRequestException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import com.wafflestudio.spring2026.auth.service.InvalidCredentialsException
 import com.wafflestudio.spring2026.auth.ForbiddenException
@@ -47,7 +49,6 @@ class GlobalExceptionHandler {
         )
     }
 
-    /** 쿼리 파라미터의 status·role 처럼 enum 으로 바꿀 수 없는 값이 오면 400 이다. */
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun handleMethodArgumentTypeMismatch(
         e: MethodArgumentTypeMismatchException,
@@ -102,44 +103,44 @@ class GlobalExceptionHandler {
                 message = exception.message ?: "모임을 찾을 수 없습니다.",
             ),
         )
-        
+
     @ExceptionHandler(SeminarNotFoundException::class)
     fun handleSeminarNotFound(
         exception: SeminarNotFoundException
-    ): ResponseEntity<ApiErrorResponse> = 
+    ): ResponseEntity<ApiErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ApiErrorResponse(
                 code = "SEMINAR_NOT_FOUND",
                 message = exception.message ?: "세미나를 찾을 수 없습니다."
             )
         )
-        
+
     @ExceptionHandler(UserNotFoundException::class)
     fun handleUserNotFound(
         exception: UserNotFoundException
-    ): ResponseEntity<ApiErrorResponse> = 
+    ): ResponseEntity<ApiErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ApiErrorResponse(
                 code = "USER_NOT_FOUND",
                 message = exception.message ?: "사용자를 찾을 수 없습니다."
             )
         )
-    
+
     @ExceptionHandler(UserEmailAlreadyExistsException::class)
     fun handleUserEmailAlreadyExists(
         exception: UserEmailAlreadyExistsException
-    ): ResponseEntity<ApiErrorResponse> = 
+    ): ResponseEntity<ApiErrorResponse> =
         ResponseEntity.status(HttpStatus.CONFLICT).body(
             ApiErrorResponse(
                 code = "USER_EMAIL_ALREADY_EXISTS",
                 message = exception.message ?: "이미 존재하는 이메일입니다."
             )
         )
-    
+
     @ExceptionHandler(UserIsNotPendingException::class)
     fun handleUserIsNotPending(
         exception: UserIsNotPendingException
-    ): ResponseEntity<ApiErrorResponse> = 
+    ): ResponseEntity<ApiErrorResponse> =
         ResponseEntity.status(HttpStatus.CONFLICT).body(
             ApiErrorResponse(
                 code = "USER_IS_NOT_PENDING",
@@ -219,11 +220,11 @@ class GlobalExceptionHandler {
                 message = exception.message ?: "신청 기간에만 취소할 수 있습니다."
             )
         )
-        
+
     @ExceptionHandler(SessionNotFoundException::class)
     fun handleSessionNotFound(
         exception: SessionNotFoundException
-    ): ResponseEntity<ApiErrorResponse> = 
+    ): ResponseEntity<ApiErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ApiErrorResponse(
                 code = "SESSION_NOT_FOUND",
