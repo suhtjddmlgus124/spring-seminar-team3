@@ -14,7 +14,6 @@ import com.wafflestudio.spring2026.waggle.service.SeminarService
 import com.wafflestudio.spring2026.waggle.service.SessionService
 import com.wafflestudio.spring2026.waggle.service.ParticipationService
 import com.wafflestudio.spring2026.waggle.service.BatchUpdateRecordsParser
-import com.wafflestudio.spring2026.waggle.dto.session.BatchUpdateRecordsResponse
 import com.wafflestudio.spring2026.waggle.dto.session.SessionCreateRequest
 import com.wafflestudio.spring2026.waggle.dto.session.SessionCreateResponse
 import com.wafflestudio.spring2026.waggle.dto.session.SessionListResponse
@@ -102,12 +101,12 @@ class SessionController(
         @PathVariable("sessionId") sessionId: Long,
         @RequestBody body: JsonNode,
         @AuthenticationPrincipal principal: AuthPrincipal,
-    ): ResponseEntity<BatchUpdateRecordsResponse> {
+    ): ResponseEntity<Void> {
         val session = sessionService.getSession(sessionId)
         accessPolicy.requireSeminarManager(principal, session.seminarId)
 
         val commands = batchUpdateRecordsParser.parse(body)
-        val response = participationService.batchUpdateRecords(session, commands)
-        return ResponseEntity.ok(response)
+        participationService.batchUpdateRecords(session, commands)
+        return ResponseEntity.noContent().build()
     }
 }
