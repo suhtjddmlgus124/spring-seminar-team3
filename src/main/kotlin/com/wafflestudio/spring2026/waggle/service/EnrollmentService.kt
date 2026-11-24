@@ -5,6 +5,7 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.annotation.Isolation
 import com.wafflestudio.spring2026.waggle.model.Enrollment
 import com.wafflestudio.spring2026.waggle.model.Seminar
 import com.wafflestudio.spring2026.auth.model.User
@@ -13,14 +14,11 @@ import com.wafflestudio.spring2026.auth.model.UserStatus
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
 import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
-import com.wafflestudio.spring2026.PageQuery
-import com.wafflestudio.spring2026.PageResponse
 import com.wafflestudio.spring2026.waggle.dto.enrollment.EnrollmentUpdateRequest
 import com.wafflestudio.spring2026.waggle.dto.enrollment.InvalidEnrollmentUpdateRequestException
 import com.wafflestudio.spring2026.waggle.repository.ParticipationRepository
-import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
-import org.springframework.transaction.annotation.Isolation
-import org.springframework.transaction.annotation.Transactional
+import com.wafflestudio.spring2026.PageQuery
+import com.wafflestudio.spring2026.PageResponse
 
 class EnrollmentNotFoundException(enrollmentId: Long): RuntimeException(
     "ID가 ${enrollmentId}인 수강 신청을 찾을 수 없습니다."
@@ -67,7 +65,7 @@ class EnrollmentService(
      *  4. 세미나가 OPEN 이 아니면       409
      * 세미나와 사용자의 존재 여부(404)는 호출 전에 확인한다.
      */
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     fun createEnrollment(seminar: Seminar, rookie: User, now: Instant): Enrollment {
         if (rookie.role != UserRole.ROOKIE) throw UserIsNotRookieException()
         if (rookie.status != UserStatus.APPROVED) throw RookieIsNotApprovedException()
@@ -192,5 +190,33 @@ class EnrollmentService(
                 isFailed = request.dropped ?: enrollment.isFailed,
             ),
         )
+    }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    fun cancelMyEnrollment(
+        seminarId: Long,
+        rookieId: Long,
+        now: Instant,
+    ) {
+        val seminar = seminarRepository.findByIdForUpdate(seminarId)
+            ?: throw SeminarNotFoundException(seminarId)
+
+        if (now.isBefore(seminar.applyStartAt) || !now.isBefore(seminar.applyEndAt)) {
+            throw EnrollmentPeriodClosedException()
+        }
+
+        val enrollment = enrollmentRepository.findBySeminarIdAndRookieId(
+            seminarId,
+            rookieId,
+        ) ?: throw MyEnrollmentNotFoundException(seminarId)
+
+        participationRepository.deleteAllByEnrollmentId(enrollment.id!!)
+
+        val deletedCount = enrollmentRepository.deleteByIdReturningCount(
+            enrollment.id,
+        )
+
+        if (deletedCount != 1) {
+            throw MyEnrollmentNotFoundException(seminarId)
+        }
     }
 }
