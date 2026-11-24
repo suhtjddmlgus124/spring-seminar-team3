@@ -5,6 +5,7 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.annotation.Isolation
 import com.wafflestudio.spring2026.waggle.model.Enrollment
 import com.wafflestudio.spring2026.waggle.model.Seminar
 import com.wafflestudio.spring2026.auth.model.User
@@ -13,6 +14,9 @@ import com.wafflestudio.spring2026.auth.model.UserStatus
 import com.wafflestudio.spring2026.waggle.dto.seminar.SeminarStatus
 import com.wafflestudio.spring2026.waggle.repository.EnrollmentRepository
 import com.wafflestudio.spring2026.waggle.repository.SeminarRepository
+import com.wafflestudio.spring2026.waggle.dto.enrollment.EnrollmentUpdateRequest
+import com.wafflestudio.spring2026.waggle.dto.enrollment.InvalidEnrollmentUpdateRequestException
+import com.wafflestudio.spring2026.waggle.repository.ParticipationRepository
 import com.wafflestudio.spring2026.PageQuery
 import com.wafflestudio.spring2026.PageResponse
 
@@ -49,6 +53,7 @@ class EnrollmentService(
     private val enrollmentRepository: EnrollmentRepository,
     private val seminarRepository: SeminarRepository,
     private val seminarService: SeminarService,
+    private val participationRepository: ParticipationRepository,
 ) {
     /**
      * 수강 신청. 선착순이라 별도 승인 없이 즉시 확정된다.
@@ -60,7 +65,7 @@ class EnrollmentService(
      *  4. 세미나가 OPEN 이 아니면       409
      * 세미나와 사용자의 존재 여부(404)는 호출 전에 확인한다.
      */
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     fun createEnrollment(seminar: Seminar, rookie: User, now: Instant): Enrollment {
         if (rookie.role != UserRole.ROOKIE) throw UserIsNotRookieException()
         if (rookie.status != UserStatus.APPROVED) throw RookieIsNotApprovedException()
@@ -152,5 +157,66 @@ class EnrollmentService(
         val enrollments = enrollmentRepository.findPageByRookieId(rookieId, query.size, query.offset)
         val total = enrollmentRepository.countByRookieId(rookieId)
         return PageResponse.of(enrollments, query, total)
+    }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    fun updateEnrollment(
+        seminarId: Long,
+        enrollmentId: Long,
+        request: EnrollmentUpdateRequest,
+    ): Enrollment {
+        val seminar = seminarRepository.findByIdForUpdate(seminarId)
+            ?: throw SeminarNotFoundException(seminarId)
+
+        val enrollment = getEnrollment(seminarId, enrollmentId)
+
+        if (request.graceDaysRemaining == null && request.dropped == null) {
+            throw InvalidEnrollmentUpdateRequestException(
+                "수정할 항목을 하나 이상 보내야 합니다.",
+            )
+        }
+
+        val graceDaysRemaining = request.graceDaysRemaining
+            ?: enrollment.graceDaysRemaining
+
+        if (graceDaysRemaining !in 0..seminar.totalGraceDays) {
+            throw InvalidEnrollmentUpdateRequestException(
+                "잔여 Grace Day는 0 이상 ${seminar.totalGraceDays} 이하여야 합니다.",
+            )
+        }
+
+        return enrollmentRepository.save(
+            enrollment.copy(
+                graceDaysRemaining = graceDaysRemaining,
+                isFailed = request.dropped ?: enrollment.isFailed,
+            ),
+        )
+    }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    fun cancelMyEnrollment(
+        seminarId: Long,
+        rookieId: Long,
+        now: Instant,
+    ) {
+        val seminar = seminarRepository.findByIdForUpdate(seminarId)
+            ?: throw SeminarNotFoundException(seminarId)
+
+        if (now.isBefore(seminar.applyStartAt) || !now.isBefore(seminar.applyEndAt)) {
+            throw EnrollmentPeriodClosedException()
+        }
+
+        val enrollment = enrollmentRepository.findBySeminarIdAndRookieId(
+            seminarId,
+            rookieId,
+        ) ?: throw MyEnrollmentNotFoundException(seminarId)
+
+        participationRepository.deleteAllByEnrollmentId(enrollment.id!!)
+
+        val deletedCount = enrollmentRepository.deleteByIdReturningCount(
+            enrollment.id,
+        )
+
+        if (deletedCount != 1) {
+            throw MyEnrollmentNotFoundException(seminarId)
+        }
     }
 }
